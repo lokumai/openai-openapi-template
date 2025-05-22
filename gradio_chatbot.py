@@ -208,13 +208,13 @@ class ChatInterface:
         """
         with gr.Blocks(theme=gr.themes.Soft(), css=CUSTOM_CSS) as demo:
             # Header
-            gr.Markdown(f"""
+            gr.Markdown("""
             # 🤖 Data Chatbot
             
             This chatbot allows you to chat with your data and visualize it.
             Please enter your question in the text box below and click the "Send" button.
             
-            > 📚 API Documentation: [{self.chat_api.base_url}/docs]({self.chat_api.base_url}/docs)
+            > 📚 API Documentation: [https://lokumai-openai-openapi-template.hf.space/docs](https://lokumai-openai-openapi-template.hf.space/docs)
             """)
             
             # Main chat interface
