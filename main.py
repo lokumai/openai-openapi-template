@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from app.api import chat_api
 from app.config.log import log_config
@@ -6,19 +7,16 @@ from loguru import logger
 from environs import Env
 from contextlib import asynccontextmanager
 from app.db.client import mongodb
-from gradio import launch_gradio
-import threading
-
-env = Env()
-env.read_env()
- 
-STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
-
+from gradio_chatbot import mount_gradio 
 
 
 print(log_config.get_log_level())
 
 
+env = Env()
+env.read_env()
+ 
+STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,9 +30,10 @@ async def lifespan(app: FastAPI):
         await mongodb.connect()
     
     # Launch Gradio in a separate thread
-    thread = threading.Thread(target=launch_gradio)
-    thread.daemon = True
-    thread.start()
+    # import threading
+    # thread = threading.Thread(target=launch_gradio)
+    # thread.daemon = True
+    # thread.start()
     yield
 
     # Shutdown
@@ -100,4 +99,12 @@ app.openapi_components = {
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
 app.include_router(chat_api.router)
+mount_gradio(app, path="/ui")
 
+
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/ui")
+
+# uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload

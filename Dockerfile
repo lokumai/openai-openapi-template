@@ -26,6 +26,6 @@ ENV PORT=7860
 
 # Expose the port
 EXPOSE 7860
-EXPOSE 7861
+
 # Start command for Hugging Face Space
 CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
