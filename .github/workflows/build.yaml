@@ -1,0 +1,30 @@
+# build python fastapi app
+
+name: Build dependencies
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      
+      - name: Install dependencies
+        run: uv sync
+      
+      - uses: astral-sh/ruff-action@v3
+      - run: ruff check
+
+

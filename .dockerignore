@@ -1,0 +1,14 @@
+.git/
+.github/
+.vscode/
+.venv/
+__pycache__/
+dist/
+build/
+*.log
+.well-known/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.DS_Store
+.idea/ 

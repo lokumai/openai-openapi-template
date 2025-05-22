@@ -1,0 +1,29 @@
+name: Sync to Hugging Face Hub
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to HF Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_ORGANIZATION: ${{ vars.HF_ORGANIZATION }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git remote add hf "https://api:$HF_TOKEN@huggingface.co/spaces/$HF_ORGANIZATION/$HF_SPACE"
+          git fetch hf
+          git checkout main
+          git push hf main:main --force
+
+
