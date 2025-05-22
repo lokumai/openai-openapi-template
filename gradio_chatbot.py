@@ -6,6 +6,7 @@ from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
 import os
+from loguru import logger
 
 # Environment configuration
 env = environs.Env()
@@ -57,6 +58,47 @@ CUSTOM_CSS = """
 .gradio-container {
     font-family: 'UI Sans Serif', 'System UI', sans-serif;
 }
+
+/* Improve chat interface */
+.chat-message {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.chat-message.user {
+    background-color: #f3f4f6;
+}
+
+.chat-message.bot {
+    background-color: #eef2ff;
+}
+
+/* Improve button styles */
+button {
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Improve input area */
+textarea {
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    transition: border-color 0.2s ease-in-out;
+}
+
+textarea:focus {
+    border-color: #4f46e5;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
 """
 
 class MessageStatus(Enum):
@@ -89,7 +131,7 @@ class ChatAPI:
         Returns:
             MessageResponse: The response from the API
         """
-        print(f"Calling chat API with prompt: {prompt}")
+        logger.debug(f"Calling chat API with prompt: {prompt}")
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
@@ -100,11 +142,12 @@ class ChatAPI:
                         "model": "gpt-3.5-turbo",
                         "completion_id": "new_chat",
                         "stream": True
-                    }
+                    },
+                    timeout=30.0  # Add timeout
                 )
                 
                 if response.status_code != 200:
-                    print(f"Error response: {response.text}")
+                    logger.error(f"API Error: {response.text}")
                     return MessageResponse(
                         status=MessageStatus.ERROR,
                         content="",
@@ -112,25 +155,33 @@ class ChatAPI:
                     )
                 
                 result = response.json()
-                print(f"API response: {result}")
+                logger.debug(f"API response: {result}")
                 
                 if "choices" in result and len(result["choices"]) > 0:
                     message = result["choices"][0].get("message", {})
                     content = message.get("content", "Content not found")
-                    print(f"Last message: {content}")
+                    logger.info(f"Last message: {content}")
                     return MessageResponse(
                         status=MessageStatus.SUCCESS,
                         content=content
                     )
                 else:
+                    logger.error("Invalid API response")
                     return MessageResponse(
                         status=MessageStatus.ERROR,
                         content="",
                         error="Invalid API response"
                     )
                     
+        except httpx.TimeoutException:
+            logger.error("API request timed out")
+            return MessageResponse(
+                status=MessageStatus.ERROR,
+                content="",
+                error="Request timed out. Please try again."
+            )
         except Exception as e:
-            print(f"Error: {str(e)}")
+            logger.error(f"Error: {str(e)}")
             return MessageResponse(
                 status=MessageStatus.ERROR,
                 content="",
@@ -170,7 +221,8 @@ class ChatInterface:
                         label="Chat History",
                         height=400,
                         show_copy_button=True,
-                        avatar_images=(USER_AVATAR, BOT_AVATAR)
+                        avatar_images=(USER_AVATAR, BOT_AVATAR),
+                        elem_classes=["chat-message"]
                     )
                     
                     # Message input area
@@ -179,7 +231,8 @@ class ChatInterface:
                             label="Your Message",
                             placeholder="Enter your question here...",
                             lines=3,
-                            scale=4
+                            scale=4,
+                            elem_classes=["message-input"]
                         )
                         submit_btn = gr.Button("Send", variant="primary", scale=1)
                     
