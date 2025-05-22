@@ -8,14 +8,15 @@ pinned: false
 short_description: OpenAI compatible Chatbot API
 ---
 
-[HF URL](https://huggingface.co/spaces/lokumai/openai-openapi-template)
-[HF_APP_URL](https://lokumai-openai-openapi-template.hf.space/)
-[Github URL](https://github.com/lokumai/openai-openapi-template)
-
-
 # OpenAI Compatible Chatbot API
 
 A FastAPI based OpenAI compatible Chatbot API with Visualization.
+
+
+## 🔗 Links
+* [HF SPACE_URL](https://huggingface.co/spaces/lokumai/openai-openapi-template)
+* [HF_APP_URL](https://lokumai-openai-openapi-template.hf.space/)
+* [Github URL](https://github.com/lokumai/openai-openapi-template)
 
 
 ## 🚀 Features
@@ -26,8 +27,6 @@ A FastAPI based OpenAI compatible Chatbot API with Visualization.
 - In-memory storage for chat history and plots for mock implementation
 - MongoDB storage for chat history and plots for production
 - Support for all major OpenAI API endpoints
-
-
 
 
 ## 📋 Endpoints
