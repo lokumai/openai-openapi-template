@@ -3,7 +3,7 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, Depends
 from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse, PlotResponse
-from app.schema.conversation import ConversationResponse
+from app.schema.conversation import ConversationResponse, ConversationItemResponse
 from app.service.chat_service import ChatService
 from app.security.auth_service import AuthService
 from app.core.api_response import api_response
@@ -103,7 +103,7 @@ async def retrieve_plot(completion_id: str, message_id: str, username: str = Dep
 
 # get all conversations
 @api_response()
-@router.get("/conversations", response_model=List[ConversationResponse])
+@router.get("/conversations", response_model=ConversationResponse)
 async def list_conversations(username: str = Depends(auth_service.verify_credentials)):
     """
     Get all conversations
@@ -114,7 +114,7 @@ async def list_conversations(username: str = Depends(auth_service.verify_credent
         raise HTTPException(status_code=500, detail=str(e))
 
 # get a conversation by id
-@router.get("/conversations/{completion_id}", response_model=ConversationResponse)
+@router.get("/conversations/{completion_id}", response_model=ConversationItemResponse)
 async def retrieve_conversation(completion_id: str, username: str = Depends(auth_service.verify_credentials)):
     """
     Get a conversation by id
