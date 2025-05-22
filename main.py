@@ -7,11 +7,8 @@ from loguru import logger
 from environs import Env
 from contextlib import asynccontextmanager
 from app.db.client import mongodb
-from gradio_chatbot import mount_gradio 
-
 
 print(log_config.get_log_level())
-
 
 env = Env()
 env.read_env()
@@ -28,12 +25,6 @@ async def lifespan(app: FastAPI):
     logger.info("Starting up application...")
     if STORAGE_TYPE == "mongodb":
         await mongodb.connect()
-    
-    # Launch Gradio in a separate thread
-    # import threading
-    # thread = threading.Thread(target=launch_gradio)
-    # thread.daemon = True
-    # thread.start()
     yield
 
     # Shutdown
@@ -99,12 +90,9 @@ app.openapi_components = {
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
 app.include_router(chat_api.router)
-mount_gradio(app, path="/ui")
-
-
 
 @app.get("/")
 async def root():
-    return RedirectResponse(url="/ui")
+    return RedirectResponse(url="http://localhost:7861")
 
 # uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload
