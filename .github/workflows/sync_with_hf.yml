@@ -1,4 +1,4 @@
-name: Sync to Hugging Face Hub with release/* branches
+name: Sync to HuggingFace Space
 
 on:
   push:
@@ -15,16 +15,17 @@ jobs:
           lfs: true
 
       - name: Push to HF Space
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_ORGANIZATION: ${{ vars.HF_ORGANIZATION }}
-          HF_SPACE: ${{ vars.HF_SPACE }}
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git remote add hf "https://api:$HF_TOKEN@huggingface.co/spaces/$HF_ORGANIZATION/$HF_SPACE"
+          git remote add hf "https://api:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/${{ vars.HF_ORGANIZATION }}/${{ vars.HF_SPACE }}"
           git fetch hf
           git checkout main
           git push hf main:main --force
+      
+      - name: Print HF space status
+        run: |
+          curl -X GET "https://api.huggingface.co/api/spaces/${{ vars.HF_ORGANIZATION }}/${{ vars.HF_SPACE }}/status"
+          echo "HF space status: $status : https://${{ vars.HF_ORGANIZATION }}-${{ vars.HF_SPACE }}.hf.space"
 
 
