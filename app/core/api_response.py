@@ -17,7 +17,7 @@ MOCK_DIR = env.str("MOCK_DIR", "resources/mock")
 def url_to_filename(url: str, method: str) -> str:
     """
     Convert API URL to mock filename.
-    Example: 
+    Example:
     - Input: GET "/v1/chat/completions" -> "chat_completions_GET.json"
     - Input: GET "/v1/chat/completions/{completion_id}" -> "chat_completions_id_GET.json"
     - Input: GET "/v1/chat/completions/123/messages" -> "chat_completions_id_messages_GET.json"
@@ -27,7 +27,7 @@ def url_to_filename(url: str, method: str) -> str:
     path = url.strip("/")
     if path.startswith("v1/"):
         path = path[3:]
-    
+
     # Replace path parameters with descriptive names
     path = path.replace("{completion_id}", "id")
     path = path.replace("{message_id}", "id")
@@ -39,24 +39,28 @@ def url_to_filename(url: str, method: str) -> str:
     logger.trace(f"filename: {filename}")
 
     # convert conversations_1 to conversations with dynamic id
-    final_filename= re.sub(r'[_][^/]+$', '_id', filename)
+    final_filename = re.sub(r"[_][^/]+$", "_id", filename)
     logger.trace(f"final_filename: {final_filename}")
-    
+
     # Add method suffix
     result = f"{final_filename}_{method}"
     logger.trace(f"END: result: {result}")
     return result
 
 
-def get_mock_response(url_path: str, python_module_name: str, python_method_name: str) -> Dict:
+def get_mock_response(
+    url_path: str, python_module_name: str, python_method_name: str
+) -> Dict:
     """Get mock response from JSON file."""
-    logger.trace(f"BEGIN: url_path: {url_path} python_module_name: {python_module_name} python_method_name: {python_method_name}")
+    logger.trace(
+        f"BEGIN: url_path: {url_path} python_module_name: {python_module_name} python_method_name: {python_method_name}"
+    )
     filename = None
     file_path = None
     try:
         # Convert to filename
-        #filename = url_to_filename(url_path, method)
-        filename = python_module_name+"_"+python_method_name
+        # filename = url_to_filename(url_path, method)
+        filename = python_module_name + "_" + python_method_name
         filename = filename.replace(".", "_")
         filename = filename.replace("__", "_")
         filename = filename.replace("/", "_")
@@ -76,19 +80,21 @@ def get_mock_response(url_path: str, python_module_name: str, python_method_name
     except FileNotFoundError:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"{file_path} mock file not found for endpoint: {url_path} [{python_module_name} {python_method_name}]"
+            detail=f"{file_path} mock file not found for endpoint: {url_path} [{python_module_name} {python_method_name}]",
         )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"{file_path} error loading mock response: {str(e)}"
+            detail=f"{file_path} error loading mock response: {str(e)}",
         )
 
 
 def api_response():
     """Decorator to handle mock/real API responses."""
+
     def decorator(func):
         logger.trace(f"BEGIN: decorator: {func}")
+
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
             logger.trace(f"BEGIN: wrapper: {request}")
@@ -99,20 +105,23 @@ def api_response():
                 logger.error("Request object not found in args or kwargs")
                 raise HTTPException(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Request object not found"
+                    detail="Request object not found",
                 )
 
             logger.trace(f"USE_MOCK value: {USE_MOCK}")
             logger.trace(f"Request path: {request.url.path}")
             logger.trace(f"Request method: {request.method}")
 
- 
             if USE_MOCK:
                 python_method_name = func.__name__
                 python_module_name = func.__module__
-                logger.warning(f"Using mock response for {request.url.path} [{request.method}] > {python_module_name}.{python_method_name}")
+                logger.warning(
+                    f"Using mock response for {request.url.path} [{request.method}] > {python_module_name}.{python_method_name}"
+                )
                 try:
-                    result = get_mock_response(request.url.path, python_module_name, python_method_name)
+                    result = get_mock_response(
+                        request.url.path, python_module_name, python_method_name
+                    )
                     logger.trace(f"Mock response: {result}")
                     return result
                 except Exception as e:
@@ -129,4 +138,5 @@ def api_response():
                     raise
 
         return wrapper
+
     return decorator

@@ -58,25 +58,48 @@ class MessageRole(str, Enum):
     ASSISTANT = "assistant"
     SYSTEM = "system"
 
+
 class ChatMessage(BaseModel):
     """
     A message in a chat completion.
     """
-    message_id: str = Field(..., description="The unique identifier for the message", default_factory=lambda: str(uuid.uuid4()))
-    role: MessageRole = Field(..., description="The role of the message sender", examples=[MessageRole.USER, MessageRole.ASSISTANT, MessageRole.SYSTEM])
+
+    message_id: str = Field(
+        ...,
+        description="The unique identifier for the message",
+        default_factory=lambda: str(uuid.uuid4()),
+    )
+    role: MessageRole = Field(
+        ...,
+        description="The role of the message sender",
+        examples=[MessageRole.USER, MessageRole.ASSISTANT, MessageRole.SYSTEM],
+    )
     content: str = Field(..., description="The content of the message")
-    timestamp: datetime = Field(default_factory=datetime.now, description="The timestamp of the message")
+    timestamp: datetime = Field(
+        default_factory=datetime.now, description="The timestamp of the message"
+    )
 
 
 class ChatCompletion(BaseModel):
     """
     A chat completion.
     """
-    completion_id: str = Field(..., description="The unique identifier for the chat completion", default_factory=lambda: str(uuid.uuid4()))
+
+    completion_id: str = Field(
+        ...,
+        description="The unique identifier for the chat completion",
+        default_factory=lambda: str(uuid.uuid4()),
+    )
 
     # openai compatible fields
-    model: str = Field(..., description="The model used for the chat completion", examples=["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"])
-    messages: List[ChatMessage] = Field(..., description="The messages in the chat completion")
+    model: str = Field(
+        ...,
+        description="The model used for the chat completion",
+        examples=["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"],
+    )
+    messages: List[ChatMessage] = Field(
+        ..., description="The messages in the chat completion"
+    )
 
     # not implemented yet
     # temperature: float = Field(default=0.7,ge=0.0, le=1.0, description="What sampling temperature to use, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.")
@@ -85,14 +108,22 @@ class ChatCompletion(BaseModel):
     # frequency_penalty: float = Field(default=0.0, ge=-2.0, le=2.0, description="Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim.")
     # presence_penalty: float = Field(default=0.0, ge=-2.0, le=2.0, description="Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.")
     # n: int = Field(default=1, ge=1, le=10, description="How many chat completion choices to generate for each prompt.")
-    
-    stream: bool = Field(default=False, description="If set to true, the model response data will be streamed to the client as it is generated using [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format). See the [Streaming section below](/docs/api-reference/chat/streaming) for more information, along with the [streaming responses](/docs/guides/streaming-responses) guide for more information on how to handle the streaming events. ")
 
+    stream: bool = Field(
+        default=False,
+        description="If set to true, the model response data will be streamed to the client as it is generated using [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format). See the [Streaming section below](/docs/api-reference/chat/streaming) for more information, along with the [streaming responses](/docs/guides/streaming-responses) guide for more information on how to handle the streaming events. ",
+    )
 
     # audit fields
     created_by: str = Field(..., description="The user who created the chat completion")
-    created_date: datetime = Field(default_factory=datetime.now, description="The date and time the chat completion was created")
-    last_updated_by: str = Field(..., description="The user who last updated the chat completion")
-    last_updated_date: datetime = Field(default_factory=datetime.now, description="The date and time the chat completion was last updated")
-    
-    
+    created_date: datetime = Field(
+        default_factory=datetime.now,
+        description="The date and time the chat completion was created",
+    )
+    last_updated_by: str = Field(
+        ..., description="The user who last updated the chat completion"
+    )
+    last_updated_date: datetime = Field(
+        default_factory=datetime.now,
+        description="The date and time the chat completion was last updated",
+    )

@@ -1,6 +1,6 @@
 from app.config.secret import secret_config as secret
 from fastapi import HTTPException, status, Security
-from fastapi.security import APIKeyHeader 
+from fastapi.security import APIKeyHeader
 from loguru import logger
 import base64
 import hmac
@@ -9,10 +9,11 @@ import json
 
 
 api_key_header = APIKeyHeader(
-            name="Authorization",
-            scheme_name="ApiKeyAuth",
-            description="API key in the format: sk-{username}-{base64_encoded_data}",
-        )
+    name="Authorization",
+    scheme_name="ApiKeyAuth",
+    description="API key in the format: sk-{username}-{base64_encoded_data}",
+)
+
 
 class AuthService:
     def __init__(self):
@@ -81,7 +82,6 @@ class AuthService:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=f"Invalid API key: {str(e)}",
             )
-
 
     def verify_credentials(self, api_key: str = Security(api_key_header)) -> str:
         """Verify API key and extract username."""

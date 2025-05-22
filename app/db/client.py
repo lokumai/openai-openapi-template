@@ -7,7 +7,7 @@ from typing import Optional
 
 
 class MongoDBClient:
-    _instance: Optional['MongoDBClient'] = None
+    _instance: Optional["MongoDBClient"] = None
     _client: Optional[AsyncIOMotorClient] = None
     _db = None
     _is_connected: bool = False
@@ -38,7 +38,7 @@ class MongoDBClient:
                     self._db = self._client[db_config.MONGO_DATABASE_NAME]
                 await self._client.server_info()
                 self._is_connected = True
-                logger.info("Connected to MongoDB" )
+                logger.info("Connected to MongoDB")
         except Exception as e:
             self._is_connected = False
             logger.error(f"Failed to connect to MongoDB: {e}")
@@ -46,17 +46,18 @@ class MongoDBClient:
 
     async def close(self):
         try:
-            if self._is_connected and self._client is not None: 
-                self._client.close() 
+            if self._is_connected and self._client is not None:
+                self._client.close()
                 self._client = None
                 self._db = None
                 self._is_connected = False
                 logger.info("Disconnected from MongoDB")
         except Exception as e:
-            logger.warning(f"Error while closing MongoDB connection: {e}") 
+            logger.warning(f"Error while closing MongoDB connection: {e}")
             self._client = None
             self._db = None
             self._is_connected = False
+
 
 # Global instance
 mongodb = MongoDBClient()

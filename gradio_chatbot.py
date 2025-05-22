@@ -1,14 +1,12 @@
 import gradio as gr
 import environs
 import httpx
-import asyncio
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
 import os
 from loguru import logger
 import plotly.graph_objects as go
-import json
 
 # Environment configuration
 env = environs.Env()
@@ -16,7 +14,11 @@ env.read_env()
 
 # Hugging Face Spaces için özel yapılandırma
 IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
-SPACE_URL = "https://lokumai-openai-openapi-template.hf.space" if IS_HF_SPACE else "http://localhost:7860"
+SPACE_URL = (
+    "https://lokumai-openai-openapi-template.hf.space"
+    if IS_HF_SPACE
+    else "http://localhost:7860"
+)
 
 # API Configuration
 BASE_URL = env.str("BASE_URL", SPACE_URL)
@@ -107,34 +109,39 @@ textarea:focus {{
 }}
 """
 
+
 class MessageStatus(Enum):
     """Enum for message status"""
+
     SUCCESS = "Success"
     ERROR = "Error"
+
 
 @dataclass
 class MessageResponse:
     """Data class for message response"""
+
     status: MessageStatus
     content: str
     figure: Optional[dict] = None
     error: Optional[str] = None
 
+
 class ChatAPI:
     """Class to handle chat API interactions"""
-    
+
     def __init__(self, base_url: str, api_key: str):
         self.base_url = base_url
         self.api_key = api_key
         self.endpoint = f"{base_url}/v1/chat/completions"
-    
+
     async def send_message(self, prompt: str) -> MessageResponse:
         """
         Send a message to the chat API
-        
+
         Args:
             prompt (str): The message to send
-            
+
         Returns:
             MessageResponse: The response from the API
         """
@@ -148,23 +155,23 @@ class ChatAPI:
                         "messages": [{"role": "user", "content": prompt}],
                         "model": "gpt-3.5-turbo",
                         "completion_id": "new_chat",
-                        "stream": True
+                        "stream": True,
                     },
-                    timeout=30.0  # Add timeout
+                    timeout=30.0,  # Add timeout
                 )
-                
+
                 if response.status_code != 200:
                     logger.error(f"API Error: {response.text}")
                     return MessageResponse(
                         status=MessageStatus.ERROR,
                         content="",
                         figure=None,
-                        error=f"API Error: {response.text}"
+                        error=f"API Error: {response.text}",
                     )
-                
+
                 result = response.json()
                 logger.debug(f"API response: {result}")
-                
+
                 if "choices" in result and len(result["choices"]) > 0:
                     message = result["choices"][0].get("message", {})
                     figure = message.get("figure", None)
@@ -172,44 +179,41 @@ class ChatAPI:
                     content = message.get("content", "Content not found")
                     logger.info(f"Last message: {content}")
                     return MessageResponse(
-                        status=MessageStatus.SUCCESS,
-                        content=content,
-                        figure=figure
+                        status=MessageStatus.SUCCESS, content=content, figure=figure
                     )
                 else:
                     logger.error("Invalid API response")
                     return MessageResponse(
                         status=MessageStatus.ERROR,
                         content="",
-                        error="Invalid API response"
+                        error="Invalid API response",
                     )
-                    
+
         except httpx.TimeoutException:
             logger.error("API request timed out")
             return MessageResponse(
                 status=MessageStatus.ERROR,
                 content="",
-                error="Request timed out. Please try again."
+                error="Request timed out. Please try again.",
             )
         except Exception as e:
             logger.error(f"Error: {str(e)}")
             return MessageResponse(
-                status=MessageStatus.ERROR,
-                content="",
-                error=f"Error: {str(e)}"
+                status=MessageStatus.ERROR, content="", error=f"Error: {str(e)}"
             )
+
 
 class ChatInterface:
     """Class to handle the Gradio chat interface"""
-    
+
     def __init__(self, chat_api: ChatAPI):
         self.chat_api = chat_api
         self.demo = self._build_interface()
-    
+
     def _build_interface(self) -> gr.Blocks:
         """
         Build the Gradio interface
-        
+
         Returns:
             gr.Blocks: The Gradio interface
         """
@@ -223,7 +227,7 @@ class ChatInterface:
             
             > 📚 API Documentation: [https://lokumai-openai-openapi-template.hf.space/docs](https://lokumai-openai-openapi-template.hf.space/docs)
             """)
-            
+
             # Main chat interface
             with gr.Row():
                 with gr.Column(scale=4):
@@ -233,12 +237,12 @@ class ChatInterface:
                         height=400,
                         show_copy_button=True,
                         avatar_images=(USER_AVATAR, BOT_AVATAR),
-                        elem_classes=["chat-message"]
+                        elem_classes=["chat-message"],
                     )
-                    
+
                     # Plotly graph display
                     plot = gr.Plot(label="Data Visualization")
-                    
+
                     # Message input area
                     with gr.Row():
                         msg = gr.Textbox(
@@ -246,94 +250,107 @@ class ChatInterface:
                             placeholder="Enter your question here...",
                             lines=3,
                             scale=4,
-                            elem_classes=["message-input"]
+                            elem_classes=["message-input"],
                         )
                         submit_btn = gr.Button("Send", variant="primary", scale=1)
-                    
+
                     # Control buttons
                     with gr.Row():
                         clear_btn = gr.Button("Clear Chat", variant="secondary")
                         retry_btn = gr.Button("Retry", variant="secondary")
-                    
+
                     # Status and last message display
                     status = gr.Textbox(label="Status", interactive=False)
                     last_message = gr.Textbox(label="Last Message", interactive=False)
-            
+
             # Event handlers
-            async def user_message(message: str, history: List[List[str]]) -> Tuple[List[List[str]], str, str, str, object]:
+            async def user_message(
+                message: str, history: List[List[str]]
+            ) -> Tuple[List[List[str]], str, str, str, object]:
                 """Handle user message submission"""
                 if not message.strip():
                     return history, "", "Please enter a message.", "", None
-                
+
                 history.append([message, ""])
                 response = await self.chat_api.send_message(message)
-                
+
                 if response.status == MessageStatus.SUCCESS:
-                    try:
-                        content = response.content
-                        figure_data = response.figure
-                        logger.debug(f"Figure data: {figure_data}")
-                        figure = None
-                        if isinstance(figure_data, dict):
-                            logger.debug(f"Plotly input: {figure_data}")
+                    content = response.content
+                    figure_data = response.figure
+                    logger.debug(f"Figure data: {figure_data}")
+                    figure = None
+                    if isinstance(figure_data, dict):
+                        logger.debug(f"Plotly input: {figure_data}")
+                        try:
                             figure = go.Figure(figure_data)
                             logger.debug(f"Plotly figure: {figure.to_dict()}")
-                        history[-1][1] = content
-                        return history, "", "Message sent successfully.", content, figure
-                    except json.JSONDecodeError:
-                        history[-1][1] = response.content
-                        return history, "", "Message sent successfully.", response.content, None
+                        except Exception as e:
+                            logger.error(f"Error creating plotly figure: {e}")
+                            figure = None
+                            history[-1][1] += (
+                                "\n\n⚠️ Graph data is not valid, cannot be displayed."
+                            )
+                    history[-1][1] = content
+                    return history, "", "Message sent successfully.", content, figure
                 else:
                     history[-1][1] = f"❌ {response.error}"
                     return history, "", f"Error: {response.error}", "", None
-            
+
             def clear_history() -> Tuple[List[List[str]], str, str, str, dict]:
                 """Clear chat history"""
                 return [], "", "Chat cleared.", "", None
-            
-            def retry_last_message(history: List[List[str]]) -> Tuple[List[List[str]], str, str, str, dict]:
+
+            def retry_last_message(
+                history: List[List[str]],
+            ) -> Tuple[List[List[str]], str, str, str, dict]:
                 """Retry the last message"""
                 if not history:
                     return history, "", "No message to retry.", "", None
-                
+
                 last_message = history[-1][0]
-                return history[:-1], last_message, "Last message will be retried.", "", None
-            
+                return (
+                    history[:-1],
+                    last_message,
+                    "Last message will be retried.",
+                    "",
+                    None,
+                )
+
             # Connect event handlers to UI elements
             submit_btn.click(
                 fn=user_message,
                 inputs=[msg, chatbot],
-                outputs=[chatbot, msg, status, last_message, plot]
+                outputs=[chatbot, msg, status, last_message, plot],
             )
-            
+
             msg.submit(
                 fn=user_message,
                 inputs=[msg, chatbot],
-                outputs=[chatbot, msg, status, last_message, plot]
+                outputs=[chatbot, msg, status, last_message, plot],
             )
-            
+
             clear_btn.click(
                 fn=clear_history,
                 inputs=[],
-                outputs=[chatbot, msg, status, last_message, plot]
+                outputs=[chatbot, msg, status, last_message, plot],
             )
-            
+
             retry_btn.click(
                 fn=retry_last_message,
                 inputs=[chatbot],
-                outputs=[chatbot, msg, status, last_message, plot]
+                outputs=[chatbot, msg, status, last_message, plot],
             )
-        
+
         return demo
+
 
 def build_gradio_app() -> gr.Blocks:
     """
     Build and return the Gradio application
-    
+
     Returns:
         gr.Blocks: The Gradio interface
     """
     chat_api = ChatAPI(BASE_URL, API_KEY)
     chat_interface = ChatInterface(chat_api)
     return chat_interface.demo
-

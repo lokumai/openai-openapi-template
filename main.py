@@ -16,12 +16,17 @@ print(log_config.get_log_level())
 
 env = Env()
 env.read_env()
- 
+
 STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
 
 # Hugging Face Spaces için özel yapılandırma
 IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
-SPACE_URL = "https://lokumai-openai-openapi-template.hf.space" if IS_HF_SPACE else "http://localhost:7860"
+SPACE_URL = (
+    "https://lokumai-openai-openapi-template.hf.space"
+    if IS_HF_SPACE
+    else "http://localhost:7860"
+)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,6 +44,7 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down application...")
     if STORAGE_TYPE == "mongodb":
         await mongodb.close()
+
 
 VERSION = "0.3.0"
 TITLE = "Talk to your data chat and visualize API"
@@ -67,19 +73,22 @@ Talk to your data chat and visualize API
 """
 
 openapi_tags = [
-    {"name": "chat", "description": "Chat API : Given a list of messages comprising a conversation, the model will return a response."}
+    {
+        "name": "chat",
+        "description": "Chat API : Given a list of messages comprising a conversation, the model will return a response.",
+    }
 ]
 
 app = FastAPI(
-    title= TITLE,
-    description= DESCRIPTION,
-    version= VERSION,
-    docs_url= "/docs",
-    redoc_url= "/redoc",
-    openapi_url= "/openapi.json",
-    lifespan= lifespan,
-    openapi_tags= openapi_tags,
-    debug= True,
+    title=TITLE,
+    description=DESCRIPTION,
+    version=VERSION,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
+    lifespan=lifespan,
+    openapi_tags=openapi_tags,
+    debug=True,
 )
 
 # Configure OpenAPI security scheme
@@ -111,34 +120,39 @@ app.include_router(chat_api.router)
 demo = build_gradio_app()
 app = gr.mount_gradio_app(app, demo, path="/ui")
 
+
 @app.get("/")
 async def root():
     """Redirect root to Gradio UI"""
     return RedirectResponse(url="/ui")
 
+
 @app.get("/manifest.json")
 async def get_manifest():
     """Return the web app manifest"""
-    return JSONResponse({
-        "name": "Data Chatbot",
-        "short_name": "Chatbot",
-        "description": "A chatbot interface for data visualization and analysis",
-        "start_url": "/ui",
-        "display": "standalone",
-        "background_color": "#ffffff",
-        "theme_color": "#4f46e5",
-        "icons": [
-            {
-                "src": "/static/icons/icon-192x192.png",
-                "sizes": "192x192",
-                "type": "image/png"
-            },
-            {
-                "src": "/static/icons/icon-512x512.png",
-                "sizes": "512x512",
-                "type": "image/png"
-            }
-        ]
-    })
+    return JSONResponse(
+        {
+            "name": "Data Chatbot",
+            "short_name": "Chatbot",
+            "description": "A chatbot interface for data visualization and analysis",
+            "start_url": "/ui",
+            "display": "standalone",
+            "background_color": "#ffffff",
+            "theme_color": "#4f46e5",
+            "icons": [
+                {
+                    "src": "/static/icons/icon-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png",
+                },
+                {
+                    "src": "/static/icons/icon-512x512.png",
+                    "sizes": "512x512",
+                    "type": "image/png",
+                },
+            ],
+        }
+    )
+
 
 # uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload
