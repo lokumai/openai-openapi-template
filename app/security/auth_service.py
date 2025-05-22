@@ -43,24 +43,32 @@ class AuthService:
             try:
                 decoded_data = base64.b64decode(encoded_data).decode()
                 data = json.loads(decoded_data)
+                logger.trace(f"Decoded data: {data}")
             except Exception as e:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail=f"Invalid API key data format: {str(e)}",
                 )
 
+            # Debug için JSON verilerini logla
+            json_data = {"username": data["username"], "created_at": data["created_at"]}
+            json_str = json.dumps(json_data)
+            logger.trace(f"JSON data for signature: {json_str}")
+            logger.trace(f"Secret key: {self.secret.KEY}")
+
             expected_signature = hmac.new(
                 self.secret.KEY.encode(),
-                json.dumps(
-                    {"username": data["username"], "created_at": data["created_at"]}
-                ).encode(),
+                json_str.encode(),
                 hashlib.sha256,
             ).hexdigest()
+
+            logger.trace(f"Expected signature: {expected_signature}")
+            logger.trace(f"Received signature: {data['signature']}")
 
             if data["signature"] != expected_signature:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid API key signature",
+                    detail=f"Invalid API key signature: {data['signature']} != {expected_signature}",
                 )
 
             result = data["username"]
@@ -80,10 +88,6 @@ class AuthService:
         logger.trace(f"BEGIN: api_key: {api_key}")
         username = self.decode_api_key(api_key)
 
-        # if username not in users or users[username] != api_key:
-        #     raise HTTPException(
-        #         status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
-        #     )
         result = username
         logger.trace(f"END: result: {result}")
         return result
