@@ -1,5 +1,5 @@
 {
-    "id": "chatcmpl-mock-123",
+    "completion_id": "chatcmpl-mock-123",
     "object": "chat.completion",
     "created": 1677858242,
     "model": "gpt-3.5-turbo",

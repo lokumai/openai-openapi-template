@@ -1,7 +1,7 @@
 {
     "items": [
         {
-            "id": "682f026d-23e8-800f-90a1-a1399b85ae64",
+            "completion_id": "682f026d-23e8-800f-90a1-a1399b85ae64",
             "title": "Customer status",
             "create_time": "2025-05-22T10:54:37.569747Z",
             "update_time": "2025-05-22T10:55:55.212705Z",
@@ -21,7 +21,7 @@
             "snippet": null
         },
         {
-            "id": "682ede89-cd84-800f-b80f-8389bcbee865",
+            "completion_id": "682ede89-cd84-800f-b80f-8389bcbee865",
             "title": "Ticket count by status",
             "create_time": "2025-05-22T08:21:30.215436Z",
             "update_time": "2025-05-22T08:22:54.867192Z",
@@ -41,7 +41,7 @@
             "snippet": null
         },
         {
-            "id": "682ec852-4014-800f-8a98-d257668a391e",
+            "completion_id": "682ec852-4014-800f-8a98-d257668a391e",
             "title": "Ticket comments count by customer",
             "create_time": "2025-05-22T06:46:42.703604Z",
             "update_time": "2025-05-22T06:50:05.464929Z",
