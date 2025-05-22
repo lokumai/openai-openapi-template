@@ -11,3 +11,7 @@ build/
 .pytest_cache/
 .DS_Store
 .idea/ 
+.vscode/
+
+api_key.txt
+api_keys.txt

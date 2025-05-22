@@ -6,21 +6,23 @@ dist/
 wheels/
 *.egg-info
 
-# ide
+# IDEs
 .idea/
 .vscode/
+
 
 # Virtual environments
 .venv
 
 # Logs
 app.log
+*.log
 
 # Environment variables
 .env
 
 # API key
-api_key.txt
+*api_key*.txt
 
 .ruff_cache/
 
