@@ -14,9 +14,11 @@ A FastAPI based OpenAI compatible Chatbot API with Visualization.
 
 
 ## 🔗 Links
-* [HF SPACE_URL](https://huggingface.co/spaces/lokumai/openai-openapi-template)
-* [HF_APP_URL](https://lokumai-openai-openapi-template.hf.space/)
 * [Github URL](https://github.com/lokumai/openai-openapi-template)
+* [HF SPACE URL](https://huggingface.co/spaces/lokumai/openai-openapi-template)
+* [SwaggerUI](https://lokumai-openai-openapi-template.hf.space/docs)
+* [Redoc](https://lokumai-openai-openapi-template.hf.space/redoc)
+* [OpenAPI](https://lokumai-openai-openapi-template.hf.space/openapi.json)
 
 
 ## 🚀 Features

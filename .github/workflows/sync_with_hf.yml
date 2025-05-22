@@ -22,14 +22,13 @@ jobs:
 
       - name: Push to HF Space
         run: |
-
           git remote add hf "https://api:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/${{ vars.HF_ORGANIZATION }}/${{ vars.HF_SPACE }}"
           git fetch hf
           git push hf HEAD:main --force
       
       - name: Print HF space status
         run: |
-          curl -X GET "https://api:${{ secrets.HF_TOKEN }}@huggingface.co/api/spaces/${{ vars.HF_ORGANIZATION }}/${{ vars.HF_SPACE }}/status"
-          echo "HF space status: $status : https://${{ vars.HF_ORGANIZATION }}-${{ vars.HF_SPACE }}.hf.space"
+          echo "HF space status : https://${{ vars.HF_ORGANIZATION }}-${{ vars.HF_SPACE }}.hf.space"
+          curl -X GET "https://api:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/${{ vars.HF_ORGANIZATION }}/${{ vars.HF_SPACE }}/status"
 
 

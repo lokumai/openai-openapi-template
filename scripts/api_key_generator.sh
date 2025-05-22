@@ -53,7 +53,7 @@ echo "API Key saved to api_key.txt"
 # Usage example
 cat <<EOF
 
-Usage example:
+Usage API Call:
 curl -X POST "http://localhost:8000/v1/chat/completions" \\
      -H "Authorization: Bearer $API_KEY" \\
      -H "Content-Type: application/json" \\

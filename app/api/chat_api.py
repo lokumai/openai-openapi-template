@@ -11,8 +11,8 @@ service = ChatService()
 auth_service = AuthService()
 
 # create a chat completion
-@router.post("/chat/completions", response_model=ChatCompletionResponse)
-async def create(req: ChatCompletionRequest):
+@router.post("/chat/completions", response_model=ChatCompletionResponse, dependencies=[Depends(auth_service.verify_credentials)])
+async def create(req: ChatCompletionRequest, username: str = Depends(auth_service.verify_credentials)):
     """
     Chat completion API - Given a list of messages comprising a conversation, the model will return a response.
     If completion_id is not provided, start a new chat completion by providing a list of messages.
@@ -27,11 +27,17 @@ async def create(req: ChatCompletionRequest):
 
 # get all chat completions
 @router.get("/chat/completions", response_model=List[ChatCompletionResponse], dependencies=[Depends(auth_service.verify_credentials)])
-async def find(page: int = 1, limit: int = 10, sort: dict = {"created_date": -1}, project: dict = None, username: str = Depends(auth_service.verify_credentials)):
+async def find(username: str = Depends(auth_service.verify_credentials)):
     """
     Get all chat completions
     Summary: First load the chat interface(UI) for list of chat completions on the left side.
     """
+
+    page: int =  0
+    limit: int = 10
+    sort: dict = {"created_date": -1}
+    project: dict = None
+
     try:
         query = {"created_by": username}
         return await service.find(query, page, limit, sort, project)
