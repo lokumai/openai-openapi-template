@@ -1,0 +1,16 @@
+{
+    "data": {
+        "type": "bar",
+        "x": ["active", "cancelled", "pending", "passive"],
+        "y": [100, 30, 40, 150]
+    },
+    "layout": {
+        "title": "Customer Status",
+        "xaxis": {
+            "title": "Status"
+        },
+        "yaxis": {
+            "title": "Count"
+        }
+    }
+}

@@ -3,8 +3,20 @@
     "completion_id": "chatcmpl-mock-123",
     "message_id": "msg_mock-123",
     "figure": {
-        "data": {},
-        "layout": {}
+        "data": {
+            "type": "bar",
+            "x": ["active", "cancelled", "pending", "passive"],
+            "y": [100, 30, 40, 150]
+        },
+        "layout": {
+            "title": "Customer Status",
+            "xaxis": {
+                "title": "Status"
+            },
+            "yaxis": {
+                "title": "Count"
+            }
+        }
     }
 
 }

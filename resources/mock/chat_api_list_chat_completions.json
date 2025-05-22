@@ -12,8 +12,20 @@
                     "role": "assistant",
                     "content": "## Result\n|status|count|\n|---|---|\n|active|100|\n|cancelled|30|\n|pending|40|\n|passive|150|\n\n## Explanation\nThis result represents the number of active, cancelled, pending and passive customers in the year 2025. This is a mock result for the question \"How many customers are active, cancelled, pending and passive in the year 2025?\"\n\n## Query\n```sql\nSELECT status, COUNT(*) FROM customers WHERE year = 2025 GROUP BY status;\n```",
                     "figure": {
-                        "data": {},
-                        "layout": {}
+                        "data": {
+                            "type": "bar",
+                            "x": ["active", "cancelled", "pending", "passive"],
+                            "y": [100, 30, 40, 150]
+                        },
+                        "layout": {
+                            "title": "Customer Status",
+                            "xaxis": {
+                                "title": "Status"
+                            },
+                            "yaxis": {
+                                "title": "Count"
+                            }
+                        }
                     }
                 },
                 "finish_reason": "stop"
