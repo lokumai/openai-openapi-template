@@ -11,6 +11,7 @@ dependencies = [
     "httpx>=0.28.1",
     "loguru>=0.7.3",
     "motor>=3.7.1",
+    "plotly>=6.1.1",
     "pydantic>=2.11.4",
     "pydantic-settings>=2.9.1",
     "pymongo>=4.13.0",

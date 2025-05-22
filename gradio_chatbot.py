@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from enum import Enum
 import os
 from loguru import logger
+import plotly.graph_objects as go
+import json
 
 # Environment configuration
 env = environs.Env()
@@ -115,6 +117,7 @@ class MessageResponse:
     """Data class for message response"""
     status: MessageStatus
     content: str
+    figure: Optional[dict] = None
     error: Optional[str] = None
 
 class ChatAPI:
@@ -155,6 +158,7 @@ class ChatAPI:
                     return MessageResponse(
                         status=MessageStatus.ERROR,
                         content="",
+                        figure=None,
                         error=f"API Error: {response.text}"
                     )
                 
@@ -163,11 +167,14 @@ class ChatAPI:
                 
                 if "choices" in result and len(result["choices"]) > 0:
                     message = result["choices"][0].get("message", {})
+                    figure = message.get("figure", None)
+                    logger.debug(f"Figure: {figure}")
                     content = message.get("content", "Content not found")
                     logger.info(f"Last message: {content}")
                     return MessageResponse(
                         status=MessageStatus.SUCCESS,
-                        content=content
+                        content=content,
+                        figure=figure
                     )
                 else:
                     logger.error("Invalid API response")
@@ -229,6 +236,9 @@ class ChatInterface:
                         elem_classes=["chat-message"]
                     )
                     
+                    # Plotly graph display
+                    plot = gr.Plot(label="Data Visualization")
+                    
                     # Message input area
                     with gr.Row():
                         msg = gr.Textbox(
@@ -250,56 +260,68 @@ class ChatInterface:
                     last_message = gr.Textbox(label="Last Message", interactive=False)
             
             # Event handlers
-            async def user_message(message: str, history: List[List[str]]) -> Tuple[List[List[str]], str, str, str]:
+            async def user_message(message: str, history: List[List[str]]) -> Tuple[List[List[str]], str, str, str, object]:
                 """Handle user message submission"""
                 if not message.strip():
-                    return history, "", "Please enter a message.", ""
+                    return history, "", "Please enter a message.", "", None
                 
                 history.append([message, ""])
                 response = await self.chat_api.send_message(message)
                 
                 if response.status == MessageStatus.SUCCESS:
-                    history[-1][1] = response.content
-                    return history, "", "Message sent successfully.", response.content
+                    try:
+                        content = response.content
+                        figure_data = response.figure
+                        logger.debug(f"Figure data: {figure_data}")
+                        figure = None
+                        if isinstance(figure_data, dict):
+                            logger.debug(f"Plotly input: {figure_data}")
+                            figure = go.Figure(figure_data)
+                            logger.debug(f"Plotly figure: {figure.to_dict()}")
+                        history[-1][1] = content
+                        return history, "", "Message sent successfully.", content, figure
+                    except json.JSONDecodeError:
+                        history[-1][1] = response.content
+                        return history, "", "Message sent successfully.", response.content, None
                 else:
                     history[-1][1] = f"❌ {response.error}"
-                    return history, "", f"Error: {response.error}", ""
+                    return history, "", f"Error: {response.error}", "", None
             
-            def clear_history() -> Tuple[List[List[str]], str, str, str]:
+            def clear_history() -> Tuple[List[List[str]], str, str, str, dict]:
                 """Clear chat history"""
-                return [], "", "Chat cleared.", ""
+                return [], "", "Chat cleared.", "", None
             
-            def retry_last_message(history: List[List[str]]) -> Tuple[List[List[str]], str, str, str]:
+            def retry_last_message(history: List[List[str]]) -> Tuple[List[List[str]], str, str, str, dict]:
                 """Retry the last message"""
                 if not history:
-                    return history, "", "No message to retry.", ""
+                    return history, "", "No message to retry.", "", None
                 
                 last_message = history[-1][0]
-                return history[:-1], last_message, "Last message will be retried.", ""
+                return history[:-1], last_message, "Last message will be retried.", "", None
             
             # Connect event handlers to UI elements
             submit_btn.click(
                 fn=user_message,
                 inputs=[msg, chatbot],
-                outputs=[chatbot, msg, status, last_message]
+                outputs=[chatbot, msg, status, last_message, plot]
             )
             
             msg.submit(
                 fn=user_message,
                 inputs=[msg, chatbot],
-                outputs=[chatbot, msg, status, last_message]
+                outputs=[chatbot, msg, status, last_message, plot]
             )
             
             clear_btn.click(
                 fn=clear_history,
                 inputs=[],
-                outputs=[chatbot, msg, status, last_message]
+                outputs=[chatbot, msg, status, last_message, plot]
             )
             
             retry_btn.click(
                 fn=retry_last_message,
                 inputs=[chatbot],
-                outputs=[chatbot, msg, status, last_message]
+                outputs=[chatbot, msg, status, last_message, plot]
             )
         
         return demo
