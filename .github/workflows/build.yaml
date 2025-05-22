@@ -4,7 +4,7 @@ name: Build dependencies
 
 on:
   push:
-    branches: [ main ]
+    branches: [ build ]
 
 jobs:
   build:
