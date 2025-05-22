@@ -68,20 +68,39 @@ def get_mock_response(url_path: str, method: str) -> Dict:
 def api_response():
     """Decorator to handle mock/real API responses."""
     def decorator(func):
+        logger.debug(f"BEGIN: decorator: {func}")
         @wraps(func)
         async def wrapper(request: Request, *args, **kwargs):
-            url_path = request.url.path
-            method = request.method
-            logger.debug(f"BEGIN: url_path: {url_path} method: {method}")
+            logger.debug(f"BEGIN: wrapper: {request}")
+            if not request:
+                logger.error("Request object not found in args or kwargs")
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Request object not found"
+                )
+
+            logger.debug(f"USE_MOCK value: {USE_MOCK}")
+            logger.debug(f"Request path: {request.url.path}")
+            logger.debug(f"Request method: {request.method}")
+
             if USE_MOCK:
                 logger.warning("Using mock response")
-                result = get_mock_response(url_path, method)
-                logger.trace(f"END: result: {result}")
-                return result
+                try:
+                    result = get_mock_response(request.url.path, request.method)
+                    logger.debug(f"Mock response: {result}")
+                    return result
+                except Exception as e:
+                    logger.error(f"Error getting mock response: {str(e)}")
+                    raise
             else:
-                # Call original function for real response
-                result = await func(request, *args, **kwargs)
-                logger.trace(f"END: result: {result}")
-                return result
+                logger.warning("Using real response")
+                try:
+                    result = await func(*args, **kwargs)
+                    logger.debug(f"Real response: {result}")
+                    return result
+                except Exception as e:
+                    logger.error(f"Error getting real response: {str(e)}")
+                    raise
+
         return wrapper
     return decorator

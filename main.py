@@ -9,8 +9,7 @@ from app.db.client import mongodb
 
 env = Env()
 env.read_env()
-
-USE_MOCK = env.bool("USE_MOCK", False)
+ 
 STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
 
 
@@ -74,6 +73,7 @@ app = FastAPI(
     openapi_url= "/openapi.json",
     lifespan= lifespan,
     openapi_tags= openapi_tags,
+    debug= True,
 )
 
 # Configure OpenAPI security scheme
