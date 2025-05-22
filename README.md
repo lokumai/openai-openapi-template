@@ -8,7 +8,7 @@ pinned: false
 short_description: OpenAI compatible Chatbot API
 ---
 
-# OpenAI Compatible Chatbot API
+# OpenAI Compatible Chatbot API Template
 
 A FastAPI based OpenAI compatible Chatbot API with Visualization.
 
@@ -55,3 +55,30 @@ uv sync
 ```bash
 uv run uvicorn app:app --reload
 ```
+
+## Usage
+
+### 🔑 API Key Generation
+
+```bash
+./scripts/api_key_generator.sh <username> <secret_key>
+```
+
+```text
+API Key generated:
+Username: template
+API Key: sk-template-token
+
+API Key saved to api_key.txt
+```
+
+### 🔑 API Key Authentication
+
+```bash
+curl -X POST "http://localhost:8000/v1/chat/completions" \
+     -H "Authorization: Bearer sk-template-token" \
+     -H "Content-Type: application/json" \
+     -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+ 

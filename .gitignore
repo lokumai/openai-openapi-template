@@ -15,3 +15,6 @@ app.log
 # Environment variables
 .env
 
+# API key
+api_key.txt
+
