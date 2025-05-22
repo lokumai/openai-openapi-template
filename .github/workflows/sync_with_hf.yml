@@ -29,7 +29,7 @@ jobs:
       
       - name: Print HF space status
         run: |
-          curl -X GET "https://api.huggingface.co/api/spaces/${{ vars.HF_ORGANIZATION }}/${{ vars.HF_SPACE }}/status"
+          curl -X GET "https://api:${{ secrets.HF_TOKEN }}@huggingface.co/api/spaces/${{ vars.HF_ORGANIZATION }}/${{ vars.HF_SPACE }}/status"
           echo "HF space status: $status : https://${{ vars.HF_ORGANIZATION }}-${{ vars.HF_SPACE }}.hf.space"
 
 
