@@ -1,0 +1,21 @@
+{
+    "name": "Data Chatbot",
+    "short_name": "Chatbot",
+    "description": "A chatbot interface for data visualization and analysis",
+    "start_url": "/ui",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4f46e5",
+    "icons": [
+        {
+            "src": "/static/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+} 

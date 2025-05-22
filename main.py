@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from app.api import chat_api
 from app.config.log import log_config
 from loguru import logger
@@ -89,16 +90,51 @@ app.openapi_components = {
     }
 }
 
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
 app.include_router(chat_api.router)
 
-# gradio mount in fastapi app
+# Build and mount Gradio app
 demo = build_gradio_app()
 app = gr.mount_gradio_app(app, demo, path="/ui")
 
 @app.get("/")
 async def root():
-    return RedirectResponse(url="http://localhost:7860/ui")
+    """Redirect root to Gradio UI"""
+    return RedirectResponse(url="/ui")
+
+@app.get("/manifest.json")
+async def get_manifest():
+    """Return the web app manifest"""
+    return JSONResponse({
+        "name": "Data Chatbot",
+        "short_name": "Chatbot",
+        "description": "A chatbot interface for data visualization and analysis",
+        "start_url": "/ui",
+        "display": "standalone",
+        "background_color": "#ffffff",
+        "theme_color": "#4f46e5",
+        "icons": [
+            {
+                "src": "/static/icons/icon-192x192.png",
+                "sizes": "192x192",
+                "type": "image/png"
+            },
+            {
+                "src": "/static/icons/icon-512x512.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ]
+    })
 
 # uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload

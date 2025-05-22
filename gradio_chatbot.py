@@ -5,6 +5,7 @@ import asyncio
 from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
 from enum import Enum
+import os
 
 # Environment configuration
 env = environs.Env()
@@ -14,6 +15,49 @@ env.read_env()
 BASE_URL = env.str("BASE_URL", "http://localhost:7860")
 API_KEY = env.str("API_KEY", "sk-test-xxx")
 CHAT_API_ENDPOINT = f"{BASE_URL}/v1/chat/completions"
+
+# Get absolute paths for static files
+STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+AVATAR_DIR = os.path.join(STATIC_DIR, "avatars")
+
+# Avatar paths
+USER_AVATAR = os.path.join(AVATAR_DIR, "user.png")
+BOT_AVATAR = os.path.join(AVATAR_DIR, "bot.png")
+
+# Custom CSS for fonts
+CUSTOM_CSS = """
+@font-face {
+    font-family: 'UI Sans Serif';
+    src: url('/static/fonts/ui-sans-serif/ui-sans-serif-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'UI Sans Serif';
+    src: url('/static/fonts/ui-sans-serif/ui-sans-serif-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'System UI';
+    src: url('/static/fonts/system-ui/system-ui-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'System UI';
+    src: url('/static/fonts/system-ui/system-ui-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+}
+
+.gradio-container {
+    font-family: 'UI Sans Serif', 'System UI', sans-serif;
+}
+"""
 
 class MessageStatus(Enum):
     """Enum for message status"""
@@ -107,7 +151,7 @@ class ChatInterface:
         Returns:
             gr.Blocks: The Gradio interface
         """
-        with gr.Blocks(theme=gr.themes.Soft()) as demo:
+        with gr.Blocks(theme=gr.themes.Soft(), css=CUSTOM_CSS) as demo:
             # Header
             gr.Markdown(f"""
             # 🤖 Data Chatbot
@@ -126,7 +170,7 @@ class ChatInterface:
                         label="Chat History",
                         height=400,
                         show_copy_button=True,
-                        avatar_images=("👤", "🤖")
+                        avatar_images=(USER_AVATAR, BOT_AVATAR)
                     )
                     
                     # Message input area
