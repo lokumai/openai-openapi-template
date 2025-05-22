@@ -7,6 +7,8 @@ from loguru import logger
 from environs import Env
 from contextlib import asynccontextmanager
 from app.db.client import mongodb
+from gradio_chatbot import build_gradio_app
+import gradio as gr
 
 print(log_config.get_log_level())
 
@@ -91,8 +93,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
 app.include_router(chat_api.router)
 
+# gradio mount in fastapi app
+demo = build_gradio_app()
+app = gr.mount_gradio_app(app, demo, path="/ui")
+
 @app.get("/")
 async def root():
-    return RedirectResponse(url="http://localhost:7861")
+    return RedirectResponse(url="http://localhost:7860/ui")
 
 # uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload
