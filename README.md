@@ -74,6 +74,27 @@ API Key: sk-template-token
 API Key saved to api_key.txt
 ```
 
+### 🔑 API Key Authentication
+
+```bash
+curl -X POST "http://localhost:8000/v1/chat/completions" \
+     -H "Authorization: Bearer sk-template-token" \
+     -H "Content-Type: application/json" \
+     -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello!"}]}'
+```
+
+## Mock Implementation
+* `USE_MOCK` environment variable is set to `true`, the API will return mock responses for all endpoints. Default is `false`.
+* `MOCK_DIR` environment variable is used to specify the directory of the mock responses, default is `resources/mock`.
+* Mock file names should be same as the module and function name like below:
+     - app/api/chat_api.py - listChatCompletions - resources/mock/`chat_api_list_chat_completions.json` - mock response for GET `/v1/chat/completions`
+     - app/api/chat_api.py - createChatCompletion - resources/mock/`chat_api_create_chat_completion.json` - mock response for POST `/v1/chat/completions`
+     - app/api/chat_api.py - getChatCompletionMessages - resources/mock/`chat_api_list_messages.json` - mock response for GET `/v1/chat/completions/{completion_id}/messages`
+     - app/api/chat_api.py - getChatCompletion - resources/mock/`chat_api_retrieve_chat_completion.json` - mock response for GET `/v1/chat/completions/{completion_id}`
+     - app/api/chat_api.py - getChatPlotByMessage - resources/mock/`chat_api_retrieve_plot.json` - mock response for GET `/v1/chat/completions/{completion_id}/messages/{message_id}/plots`
+
+
+
 ## Contributing
 When you make changes to the code, please run the following commands to ensure the code is running on your local machine and formatted and linted correctly.
 
@@ -147,22 +168,17 @@ gh pr create --base main --head feature/new-feature --title "Add new feature" --
 
 
 
-### 🔑 API Key Authentication
 
-```bash
-curl -X POST "http://localhost:8000/v1/chat/completions" \
-     -H "Authorization: Bearer sk-template-token" \
-     -H "Content-Type: application/json" \
-     -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello!"}]}'
-```
 
  ## Open Issue
+ Mock Implementation:
+ - [X] Implement Mock response for all endpoints
+ - [X] Implement API-Key Authentication and validation in all endpoints
+
+ Production Implementation:
  - [ ] POST chat/completions - create a new chat completion
  - [ ] GET  chat/completions - list stored chat completions
  - [ ] GET  chat/completions/{completion_id} - get a stored chat completion by id
  - [ ] GET  chat/completions/{completion_id}/messages - get the messages in a stored chat completion by id
  - [ ] GET  chat/completions/{completion_id}/messages/{message_id}/plots - get the plots/graph-data/figure-json in a stored chat completion by id and message id
- - [ ] Implement Mock response for all endpoints
- - [ ] Implement API-Key Authentication and validation in all endpoints
- - [ ] 
- - [ ] 
+

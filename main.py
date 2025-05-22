@@ -6,6 +6,8 @@ from loguru import logger
 from environs import Env
 from contextlib import asynccontextmanager
 from app.db.client import mongodb
+from gradio import launch_gradio
+import threading
 
 env = Env()
 env.read_env()
@@ -15,6 +17,8 @@ STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
 
 
 print(log_config.get_log_level())
+
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -26,6 +30,11 @@ async def lifespan(app: FastAPI):
     logger.info("Starting up application...")
     if STORAGE_TYPE == "mongodb":
         await mongodb.connect()
+    
+    # Launch Gradio in a separate thread
+    thread = threading.Thread(target=launch_gradio)
+    thread.daemon = True
+    thread.start()
     yield
 
     # Shutdown
