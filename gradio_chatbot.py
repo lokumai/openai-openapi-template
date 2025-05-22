@@ -35,8 +35,8 @@ def build_gradio_app() -> gr.Blocks:
         prompt_input = gr.Textbox(label="Your Message")
         output_text = gr.Textbox(label="Model Response")
 
-        def on_submit(prompt):
-            return  call_chat_api(prompt)
+        async def on_submit(prompt):
+            return await call_chat_api(prompt)
 
         prompt_input.submit(on_submit, [prompt_input], output_text)
         gr.Button("Send").click(on_submit, [prompt_input], output_text)
