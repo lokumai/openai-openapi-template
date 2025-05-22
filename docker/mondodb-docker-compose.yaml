@@ -1,0 +1,29 @@
+# mongodb for application data storage(metadata for app)
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootPass
+      - MONGO_INITDB_DATABASE=openai_api
+    volumes:
+      - mongo_data:/data/db
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8082:8081
+    environment:
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootPass
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_DATABASE=openai_api
+    depends_on:
+      - mongo
+volumes:
+  mongo_data:
