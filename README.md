@@ -74,6 +74,79 @@ API Key: sk-template-token
 API Key saved to api_key.txt
 ```
 
+## Contributing
+When you make changes to the code, please run the following commands to ensure the code is running on your local machine and formatted and linted correctly.
+
+* Fork the repository
+```bash
+git clone https://github.com/yourname/openai-openapi-template.git
+```
+
+* cd to the project directory
+```bash
+cd openai-openapi-template
+```
+
+* Create a new branch
+```bash
+git checkout -b feature/new-feature
+# or
+git checkout -b bug/fix-issue
+# or
+git checkout -b hotfix/critical-fix
+```
+
+* Make your changes and commit them
+```bash
+git status
+git add .
+git commit -m "Add new feature"
+```
+
+* Push your changes to the branch
+```bash
+git push origin feature/new-feature
+```
+
+* Merge from main branch to your branch
+```bash
+git fetch origin main
+git merge origin/main
+```
+
+
+* Validate the code is running on your local machine
+```bash
+uv run uvicorn app:app --reload
+```
+
+* Format and lint the code
+```bash
+ruff check --fix
+```
+
+```bash
+ruff format
+```
+
+* Everything is working, create a pull request
+```bash
+git push origin feature/new-feature
+```
+
+* Create a pull request
+```bash
+gh pr create --base main --head feature/new-feature --title "Add new feature" --body "This PR adds a new feature to the project"
+```
+
+
+
+
+
+
+
+
+
 ### 🔑 API Key Authentication
 
 ```bash
