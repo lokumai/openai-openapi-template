@@ -83,4 +83,13 @@ curl -X POST "http://localhost:8000/v1/chat/completions" \
      -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello!"}]}'
 ```
 
- 
+ ## Open Issue
+ - [ ] POST chat/completions - create a new chat completion
+ - [ ] GET  chat/completions - list stored chat completions
+ - [ ] GET  chat/completions/{completion_id} - get a stored chat completion by id
+ - [ ] GET  chat/completions/{completion_id}/messages - get the messages in a stored chat completion by id
+ - [ ] GET  chat/completions/{completion_id}/messages/{message_id}/plots - get the plots/graph-data/figure-json in a stored chat completion by id and message id
+ - [ ] Implement Mock response for all endpoints
+ - [ ] Implement API-Key Authentication and validation in all endpoints
+ - [ ] 
+ - [ ] 
