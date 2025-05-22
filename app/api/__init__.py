@@ -7,5 +7,5 @@
     formatted responses.
 
     Modules:
-    - chat_api.py: Defines a_i_p_endpoints related to chat completions and messages.
+    - chat_api.py: Defines chat API endpoints related to chat completions and messages.
 """

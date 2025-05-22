@@ -1,5 +1,5 @@
 """
-    Schema Package (API Data Validation).
+    Schema Package (API Data Validation), DTO(Data Transfer Object)
 
     This package defines Pydantic models (schemas) used for validating incoming
     API request data and serializing outgoing API response data. These schemas

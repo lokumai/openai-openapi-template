@@ -1,7 +1,7 @@
 """
     Security Package.
 
-    This package handles authentication and authorization mechanisms for the
+    This package handles authentication mechanisms for the
     application. It includes services for verifying API keys, decoding tokens,
     and ensuring that requests are properly authenticated before accessing
     protected resources.
