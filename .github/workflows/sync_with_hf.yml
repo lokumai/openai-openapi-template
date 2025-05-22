@@ -9,19 +9,23 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           lfs: true
-
-      - name: Push to HF Space
+      
+      - name: Configure Git
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
+
+      - name: Push to HF Space
+        run: |
+
           git remote add hf "https://api:${{ secrets.HF_TOKEN }}@huggingface.co/spaces/${{ vars.HF_ORGANIZATION }}/${{ vars.HF_SPACE }}"
           git fetch hf
-          git checkout main
-          git push hf main:main --force
+          git push hf HEAD:main --force
       
       - name: Print HF space status
         run: |
