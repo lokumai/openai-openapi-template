@@ -43,20 +43,21 @@ class MessageResponse(BaseModel):
     message_id: str = Field(..., description="The unique identifier for the message")
     role: MessageSchemaRoleType = Field(..., description="The role of the message")
     content: str = Field(..., description="The content of the message")
+    figure: dict = Field(..., description="The figure data to be visualized")
 
 
 class ChoiceResponse(BaseModel):
     finish_reason: ChoiceSchemaFinishReasonType = Field(..., description="The reason the model stopped generating tokens. This will be `stop` if the model hit a natural stop point or a provided stop sequence, `length` if the maximum number of tokens specified in the request was reached, `content_filter` if content was omitted due to a flag from our content filters")
     index: int = Field(..., description="The index of the choice in the list of choices.")
     message: MessageResponse = Field(..., description="The message to use for the chat completion")
-    logprobs: str = None # not implemented yet
+    #logprobs: str = None # not implemented yet
 
 
 class ChatCompletionResponse(ChatCompletionBase):
     """
     Represents a chat completion response returned by model, based on the provided input.
     """
-    id: str = Field(..., description="The unique identifier for the chat completion")
+    completion_id: str = Field(..., description="The unique identifier for the chat completion")
     choices: List[ChoiceResponse] = Field(..., description="A list of chat completion choices.")
     created: int = Field(..., description="The Unix timestamp (in seconds) of when the chat completion was created.")
     model: str = Field(..., description="The model used for the chat completion") 
@@ -85,5 +86,6 @@ class PlotResponse(BaseModel):
     Represents a plot response.
     """
     plot_id: str = Field(..., description="The unique identifier for the plot")
+    completion_id: str = Field(..., description="The unique identifier for the chat completion that the plot is for")
     message_id: str = Field(..., description="The unique identifier for the message that the plot is for")
     figure: dict = Field(..., description="The figure data to be visualized")

@@ -1,0 +1,10 @@
+{
+    "plot_id": "plot_mock-123",
+    "completion_id": "chatcmpl-mock-123",
+    "message_id": "msg_mock-123",
+    "figure": {
+        "data": {},
+        "layout": {}
+    }
+
+}

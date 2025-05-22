@@ -1,4 +1,5 @@
 {
+    "completion_id": "chatcmpl-mock-123",
     "object": "chat.completion",
     "created": 1677858242,
     "model": "gpt-3.5-turbo",
@@ -6,15 +7,15 @@
         {
             "index": 0,
             "message": {
+                "message_id": "msg_mock-123",
                 "role": "assistant",
                 "content": "This is a mock response from the assistant.",
-                "tool_calls": null,
-                "annotations": [],
-                "audio": null,
-                "refusal": ""
+                "figure": {
+                    "data": {},
+                    "layout": {}
+                }
             },
-            "finish_reason": "stop",
-            "logprobs": null
+            "finish_reason": "stop"
         }
     ],
     "usage": {

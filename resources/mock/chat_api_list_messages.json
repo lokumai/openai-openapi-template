@@ -1,0 +1,11 @@
+[
+    {
+        "message_id": "msg_mock-123",
+        "role": "assistant",
+        "content": "This is a mock response from the assistant.",
+        "figure": {
+            "data": {},
+            "layout": {}
+        }
+    }
+]
