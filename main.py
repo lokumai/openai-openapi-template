@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager
 from app.db.client import mongodb
 from gradio_chatbot import build_gradio_app
 import gradio as gr
+import os
 
 print(log_config.get_log_level())
 
@@ -17,6 +18,10 @@ env = Env()
 env.read_env()
  
 STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
+
+# Hugging Face Spaces için özel yapılandırma
+IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
+BASE_PATH = "" if not IS_HF_SPACE else "/spaces/lokumai/openai-openapi-template"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -34,7 +39,6 @@ async def lifespan(app: FastAPI):
     logger.info("Shutting down application...")
     if STORAGE_TYPE == "mongodb":
         await mongodb.close()
-
 
 VERSION = "0.3.0"
 TITLE = "Talk to your data chat and visualize API"
@@ -76,6 +80,7 @@ app = FastAPI(
     lifespan= lifespan,
     openapi_tags= openapi_tags,
     debug= True,
+    root_path=BASE_PATH
 )
 
 # Configure OpenAPI security scheme
@@ -110,7 +115,7 @@ app = gr.mount_gradio_app(app, demo, path="/ui")
 @app.get("/")
 async def root():
     """Redirect root to Gradio UI"""
-    return RedirectResponse(url="/ui")
+    return RedirectResponse(url=f"{BASE_PATH}/ui")
 
 @app.get("/manifest.json")
 async def get_manifest():
@@ -119,18 +124,18 @@ async def get_manifest():
         "name": "Data Chatbot",
         "short_name": "Chatbot",
         "description": "A chatbot interface for data visualization and analysis",
-        "start_url": "/ui",
+        "start_url": f"{BASE_PATH}/ui",
         "display": "standalone",
         "background_color": "#ffffff",
         "theme_color": "#4f46e5",
         "icons": [
             {
-                "src": "/static/icons/icon-192x192.png",
+                "src": f"{BASE_PATH}/static/icons/icon-192x192.png",
                 "sizes": "192x192",
                 "type": "image/png"
             },
             {
-                "src": "/static/icons/icon-512x512.png",
+                "src": f"{BASE_PATH}/static/icons/icon-512x512.png",
                 "sizes": "512x512",
                 "type": "image/png"
             }

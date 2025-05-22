@@ -12,8 +12,14 @@ from loguru import logger
 env = environs.Env()
 env.read_env()
 
+# Hugging Face Spaces için özel yapılandırma
+IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
+BASE_PATH = "" if not IS_HF_SPACE else "/spaces/lokumai/openai-openapi-template"
+
 # API Configuration
 BASE_URL = env.str("BASE_URL", "http://localhost:7860")
+if IS_HF_SPACE:
+    BASE_URL = f"https://huggingface.co{BASE_PATH}"
 API_KEY = env.str("API_KEY", "sk-test-xxx")
 CHAT_API_ENDPOINT = f"{BASE_URL}/v1/chat/completions"
 
@@ -26,79 +32,79 @@ USER_AVATAR = os.path.join(AVATAR_DIR, "user.png")
 BOT_AVATAR = os.path.join(AVATAR_DIR, "bot.png")
 
 # Custom CSS for fonts
-CUSTOM_CSS = """
-@font-face {
+CUSTOM_CSS = f"""
+@font-face {{
     font-family: 'UI Sans Serif';
-    src: url('/static/fonts/ui-sans-serif/ui-sans-serif-Regular.woff2') format('woff2');
+    src: url('{BASE_PATH}/static/fonts/ui-sans-serif/ui-sans-serif-Regular.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
-}
+}}
 
-@font-face {
+@font-face {{
     font-family: 'UI Sans Serif';
-    src: url('/static/fonts/ui-sans-serif/ui-sans-serif-Bold.woff2') format('woff2');
+    src: url('{BASE_PATH}/static/fonts/ui-sans-serif/ui-sans-serif-Bold.woff2') format('woff2');
     font-weight: bold;
     font-style: normal;
-}
+}}
 
-@font-face {
+@font-face {{
     font-family: 'System UI';
-    src: url('/static/fonts/system-ui/system-ui-Regular.woff2') format('woff2');
+    src: url('{BASE_PATH}/static/fonts/system-ui/system-ui-Regular.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
-}
+}}
 
-@font-face {
+@font-face {{
     font-family: 'System UI';
-    src: url('/static/fonts/system-ui/system-ui-Bold.woff2') format('woff2');
+    src: url('{BASE_PATH}/static/fonts/system-ui/system-ui-Bold.woff2') format('woff2');
     font-weight: bold;
     font-style: normal;
-}
+}}
 
-.gradio-container {
+.gradio-container {{
     font-family: 'UI Sans Serif', 'System UI', sans-serif;
-}
+}}
 
 /* Improve chat interface */
-.chat-message {
+.chat-message {{
     padding: 1rem;
     border-radius: 0.5rem;
     margin-bottom: 1rem;
     display: flex;
     align-items: flex-start;
-}
+}}
 
-.chat-message.user {
+.chat-message.user {{
     background-color: #f3f4f6;
-}
+}}
 
-.chat-message.bot {
+.chat-message.bot {{
     background-color: #eef2ff;
-}
+}}
 
 /* Improve button styles */
-button {
+button {{
     transition: all 0.2s ease-in-out;
-}
+}}
 
-button:hover {
+button:hover {{
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+}}
 
 /* Improve input area */
-textarea {
+textarea {{
     border-radius: 0.5rem;
     padding: 0.75rem;
     border: 1px solid #e5e7eb;
     transition: border-color 0.2s ease-in-out;
-}
+}}
 
-textarea:focus {
+textarea:focus {{
     border-color: #4f46e5;
     outline: none;
     box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
-}
+}}
 """
 
 class MessageStatus(Enum):
