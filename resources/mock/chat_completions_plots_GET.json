@@ -1,0 +1,28 @@
+{
+    "id": "chatcmpl-mock-123",
+    "name": "Mock Chat",
+    "created_at": 1677858242,
+    "updated_at": 1677858242,
+    "message": {
+        "message_id": "msg-mock-123",
+        "role": "assistant",
+        "content": "This is a mock response from the assistant.",
+        "name": null,
+        "function_call": null,
+        "tool_calls": null,
+        "annotations": [],
+        "audio": null,
+        "refusal": "",
+        "created_at": 1677858242
+    },
+    "plots": [
+        {
+            "type": "line",
+            "data": {
+                "x": [1, 2, 3, 4, 5],
+                "y": [1, 4, 9, 16, 25]
+            },
+            "title": "Mock Plot"
+        }
+    ]
+} 

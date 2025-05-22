@@ -1,0 +1,28 @@
+{
+    "id": "chatcmpl-mock-123",
+    "object": "chat.completion",
+    "created": 1677858242,
+    "model": "gpt-3.5-turbo",
+    "choices": [
+        {
+            "index": 0,
+            "message": {
+                "role": "assistant",
+                "content": "This is a mock response from the assistant.",
+                "tool_calls": null,
+                "annotations": [],
+                "audio": null,
+                "refusal": ""
+            },
+            "finish_reason": "stop",
+            "logprobs": null
+        }
+    ],
+    "usage": {
+        "prompt_tokens": 10,
+        "completion_tokens": 20,
+        "total_tokens": 30
+    },
+    "service_tier": "standard",
+    "system_fingerprint": "fp_1234567890"
+} 
