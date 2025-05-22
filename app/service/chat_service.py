@@ -5,6 +5,9 @@ from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse
 from app.model.chat_model import ChatCompletion, ChatMessage
 import uuid
 
+from app.schema.conversation import ConversationResponse
+
+
 class ChatService:
     def __init__(self):
         self.chat_repository = ChatRepository()
@@ -44,4 +47,9 @@ class ChatService:
     async def find_messages(self, completion_id: str) -> List[ChatMessage]:
         return self.chat_repository.find_messages(completion_id)
     
+    # conversation service
+    async def find_all_conversations(self, username: str) -> List[ConversationResponse]:
+        raise NotImplementedError("Not implemented")
     
+    async def find_conversation_by_id(self, completion_id: str) -> ConversationResponse:
+        raise NotImplementedError("Not implemented")

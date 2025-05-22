@@ -37,7 +37,11 @@ from typing import List
 #     },
 #     {
 #       "role": "assistant",
-#       "content": "**Between Cities**: Take a high-speed train (Italo or Trenitalia) from Rome to Florence. Book in advance for tickets around €25-35 one-way (1.5 hours). Trains depart from Roma Termini and arrive at Firenze Santa Maria Novella. Check schedules on trenitalia.com or italo.it.\n\n**Within Florence**: Florence is compact and walkable, so you won’t need much public transport. For longer distances (e.g., to Piazzale Michelangelo), use ATAF buses (~€1.50 per ride, buy tickets at tabaccherie). Alternatively, rent a bike (~€10/day) for a scenic way to explore. Taxis are pricier (~€10-15 for short trips), so stick to walking or buses for budget travel."
+#       "content": "**Between Cities**: Take a high-speed train (Italo or Trenitalia) from Rome to Florence. Book in advance for tickets around €25-35 one-way (1.5 hours). Trains depart from Roma Termini and arrive at Firenze Santa Maria Novella. Check schedules on trenitalia.com or italo.it.\n\n**Within Florence**: Florence is compact and walkable, so you won’t need much public transport. For longer distances (e.g., to Piazzale Michelangelo), use ATAF buses (~€1.50 per ride, buy tickets at tabaccherie). Alternatively, rent a bike (~€10/day) for a scenic way to explore. Taxis are pricier (~€10-15 for short trips), so stick to walking or buses for budget travel.",
+#        "plot": {
+#            "data": {},
+#            "layout": {}
+#        }
 #     }
 #   ],
 #   "temperature": 0.8,

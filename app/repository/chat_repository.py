@@ -20,6 +20,9 @@ class ChatRepository:
         completion_id = str(result.upserted_id) if result.upserted_id else entity.completion_id
         entity.completion_id = completion_id
 
+        # save conversation if new chat completion
+        # TODO: save conversation
+
         return entity
 
     def find(self, query: dict, page: int = 1, limit: int = 10, sort: dict = None, project: dict = None) -> List[ChatCompletion]:

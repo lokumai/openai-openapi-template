@@ -6,6 +6,10 @@ dist/
 wheels/
 *.egg-info
 
+# ide
+.idea/
+.vscode/
+
 # Virtual environments
 .venv
 
@@ -18,3 +22,6 @@ app.log
 # API key
 api_key.txt
 
+.ruff_cache/
+
+*_UML*
