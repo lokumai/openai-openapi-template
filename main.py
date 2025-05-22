@@ -21,7 +21,7 @@ STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
 
 # Hugging Face Spaces için özel yapılandırma
 IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
-BASE_PATH = "" if not IS_HF_SPACE else "/spaces/lokumai/openai-openapi-template"
+SPACE_URL = "https://lokumai-openai-openapi-template.hf.space" if IS_HF_SPACE else "http://localhost:7860"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -80,7 +80,6 @@ app = FastAPI(
     lifespan= lifespan,
     openapi_tags= openapi_tags,
     debug= True,
-    root_path=BASE_PATH
 )
 
 # Configure OpenAPI security scheme
@@ -115,7 +114,7 @@ app = gr.mount_gradio_app(app, demo, path="/ui")
 @app.get("/")
 async def root():
     """Redirect root to Gradio UI"""
-    return RedirectResponse(url=f"{BASE_PATH}/ui")
+    return RedirectResponse(url="/ui")
 
 @app.get("/manifest.json")
 async def get_manifest():
@@ -124,18 +123,18 @@ async def get_manifest():
         "name": "Data Chatbot",
         "short_name": "Chatbot",
         "description": "A chatbot interface for data visualization and analysis",
-        "start_url": f"{BASE_PATH}/ui",
+        "start_url": "/ui",
         "display": "standalone",
         "background_color": "#ffffff",
         "theme_color": "#4f46e5",
         "icons": [
             {
-                "src": f"{BASE_PATH}/static/icons/icon-192x192.png",
+                "src": "/static/icons/icon-192x192.png",
                 "sizes": "192x192",
                 "type": "image/png"
             },
             {
-                "src": f"{BASE_PATH}/static/icons/icon-512x512.png",
+                "src": "/static/icons/icon-512x512.png",
                 "sizes": "512x512",
                 "type": "image/png"
             }

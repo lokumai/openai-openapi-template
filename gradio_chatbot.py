@@ -14,12 +14,10 @@ env.read_env()
 
 # Hugging Face Spaces için özel yapılandırma
 IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
-BASE_PATH = "" if not IS_HF_SPACE else "/spaces/lokumai/openai-openapi-template"
+SPACE_URL = "https://lokumai-openai-openapi-template.hf.space" if IS_HF_SPACE else "http://localhost:7860"
 
 # API Configuration
-BASE_URL = env.str("BASE_URL", "http://localhost:7860")
-if IS_HF_SPACE:
-    BASE_URL = f"https://huggingface.co{BASE_PATH}"
+BASE_URL = env.str("BASE_URL", SPACE_URL)
 API_KEY = env.str("API_KEY", "sk-test-xxx")
 CHAT_API_ENDPOINT = f"{BASE_URL}/v1/chat/completions"
 
@@ -32,31 +30,31 @@ USER_AVATAR = os.path.join(AVATAR_DIR, "user.png")
 BOT_AVATAR = os.path.join(AVATAR_DIR, "bot.png")
 
 # Custom CSS for fonts
-CUSTOM_CSS = f"""
+CUSTOM_CSS = """
 @font-face {{
     font-family: 'UI Sans Serif';
-    src: url('{BASE_PATH}/static/fonts/ui-sans-serif/ui-sans-serif-Regular.woff2') format('woff2');
+    src: url('/static/fonts/ui-sans-serif/ui-sans-serif-Regular.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
 }}
 
 @font-face {{
     font-family: 'UI Sans Serif';
-    src: url('{BASE_PATH}/static/fonts/ui-sans-serif/ui-sans-serif-Bold.woff2') format('woff2');
+    src: url('/static/fonts/ui-sans-serif/ui-sans-serif-Bold.woff2') format('woff2');
     font-weight: bold;
     font-style: normal;
 }}
 
 @font-face {{
     font-family: 'System UI';
-    src: url('{BASE_PATH}/static/fonts/system-ui/system-ui-Regular.woff2') format('woff2');
+    src: url('/static/fonts/system-ui/system-ui-Regular.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
 }}
 
 @font-face {{
     font-family: 'System UI';
-    src: url('{BASE_PATH}/static/fonts/system-ui/system-ui-Bold.woff2') format('woff2');
+    src: url('/static/fonts/system-ui/system-ui-Bold.woff2') format('woff2');
     font-weight: bold;
     font-style: normal;
 }}
