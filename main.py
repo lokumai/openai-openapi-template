@@ -8,7 +8,7 @@ from loguru import logger
 from environs import Env
 from contextlib import asynccontextmanager
 from app.db.client import mongodb
-from gradio_chatbot import build_gradio_app
+from gradio_chatbot import build_gradio_app, app_auth
 import gradio as gr
 import os
 
@@ -118,7 +118,7 @@ app.include_router(chat_api.router)
 
 # Build and mount Gradio app
 demo = build_gradio_app()
-app = gr.mount_gradio_app(app, demo, path="/ui")
+app = gr.mount_gradio_app(app, demo, path="/ui", auth=app_auth)
 
 
 @app.get("/")

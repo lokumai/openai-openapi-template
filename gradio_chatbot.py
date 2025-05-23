@@ -34,6 +34,15 @@ AVATAR_DIR = os.path.join(STATIC_DIR, "avatars")
 USER_AVATAR = os.path.join(AVATAR_DIR, "user.png")
 BOT_AVATAR = os.path.join(AVATAR_DIR, "bot.png")
 
+AUTH_USERNAME = env.str("AUTH_USERNAME", "admin")
+AUTH_PASSWORD = env.str("AUTH_PASSWORD", "admin")
+
+
+def app_auth(username: str, password: str) -> bool:
+    logger.debug(f"Entering app_auth: Username: {username}")
+    logger.debug(f"AUTH_USERNAME: {AUTH_USERNAME}")
+    return username == AUTH_USERNAME and password == AUTH_PASSWORD
+
 # Custom CSS for fonts
 CUSTOM_CSS = """
 @font-face {{
