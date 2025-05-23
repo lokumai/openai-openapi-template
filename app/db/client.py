@@ -4,9 +4,16 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app.config.db import db_config
 from loguru import logger
 from typing import Optional
+from environs import Env
+
+env = Env()
+env.read_env()
+
+STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
 
 
 class MongoDBClient:
+    
     _instance: Optional["MongoDBClient"] = None
     _client: Optional[AsyncIOMotorClient] = None
     _db = None
