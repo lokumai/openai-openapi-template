@@ -1,5 +1,5 @@
 {
-    "name": "Data Chatbot",
+    "name": "Talk To Your Data Chatbot",
     "short_name": "Chatbot",
     "description": "A chatbot interface for data visualization and analysis",
     "start_url": "/ui",
@@ -18,4 +18,4 @@
             "type": "image/png"
         }
     ]
-} 
+}

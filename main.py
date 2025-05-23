@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -126,29 +127,9 @@ async def root():
 @app.get("/manifest.json")
 async def get_manifest():
     """Return the web app manifest"""
-    return JSONResponse(
-        {
-            "name": "Data Chatbot",
-            "short_name": "Chatbot",
-            "description": "A chatbot interface for data visualization and analysis",
-            "start_url": "/ui",
-            "display": "standalone",
-            "background_color": "#ffffff",
-            "theme_color": "#4f46e5",
-            "icons": [
-                {
-                    "src": "/static/icons/icon-192x192.png",
-                    "sizes": "192x192",
-                    "type": "image/png",
-                },
-                {
-                    "src": "/static/icons/icon-512x512.png",
-                    "sizes": "512x512",
-                    "type": "image/png",
-                },
-            ],
-        }
-    )
+    manifest_path = os.path.join(os.path.dirname(__file__), "static", "manifest.json")
+    with open(manifest_path, "r") as f:
+        return JSONResponse(json.load(f))
 
 
 # uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload
