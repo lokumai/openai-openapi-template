@@ -9,7 +9,7 @@ from environs import Env
 env = Env()
 env.read_env()
 
-STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
+DB_DATABASE_TYPE = env.str("DB_DATABASE_TYPE", "mongodb")
 
 
 class MongoDBClient:
@@ -26,7 +26,7 @@ class MongoDBClient:
     def __init__(self):
         if self._client is None:
             self._client = AsyncIOMotorClient(db_config.get_mongo_uri())
-            self._db = self._client[db_config.MONGO_DATABASE_NAME]
+            self._db = self._client[db_config.DATABASE_NAME]
 
     @property
     def client(self) -> AsyncIOMotorClient:
@@ -41,7 +41,7 @@ class MongoDBClient:
             if not self._is_connected:
                 if self._client is None:
                     self._client = AsyncIOMotorClient(db_config.get_mongo_uri())
-                    self._db = self._client[db_config.MONGO_DATABASE_NAME]
+                    self._db = self._client[db_config.DATABASE_NAME]
                 await self._client.server_info()
                 self._is_connected = True
                 logger.info("Connected to MongoDB")

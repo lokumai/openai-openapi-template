@@ -18,7 +18,7 @@ print(log_config.get_log_level())
 env = Env()
 env.read_env()
 
-STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
+DB_DATABASE_TYPE = env.str("DB_DATABASE_TYPE", "mongodb")
 
 # Hugging Face Spaces için özel yapılandırma
 IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
@@ -33,13 +33,13 @@ async def lifespan(app: FastAPI):
     """
     # Startup
     logger.info("Starting up application...")
-    if STORAGE_TYPE == "mongodb":
+    if DB_DATABASE_TYPE == "mongodb":
         await mongodb.connect()
     yield
 
     # Shutdown
     logger.info("Shutting down application...")
-    if STORAGE_TYPE == "mongodb":
+    if DB_DATABASE_TYPE == "mongodb":
         await mongodb.close()
 
 
