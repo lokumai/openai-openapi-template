@@ -72,11 +72,16 @@ class ChatMessage(BaseModel):
     role: MessageRole = Field(
         ...,
         description="The role of the message sender",
-        examples=[MessageRole.USER, MessageRole.ASSISTANT, MessageRole.SYSTEM],
+        examples=[
+            MessageRole.USER,
+            MessageRole.ASSISTANT,
+            MessageRole.SYSTEM,
+        ],
     )
     content: str = Field(..., description="The content of the message")
     timestamp: datetime = Field(
-        default_factory=datetime.now, description="The timestamp of the message"
+        default_factory=datetime.now,
+        description="The timestamp of the message",
     )
 
 
@@ -97,9 +102,7 @@ class ChatCompletion(BaseModel):
         description="The model used for the chat completion",
         examples=["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"],
     )
-    messages: List[ChatMessage] = Field(
-        ..., description="The messages in the chat completion"
-    )
+    messages: List[ChatMessage] = Field(..., description="The messages in the chat completion")
 
     # not implemented yet
     # temperature: float = Field(default=0.7,ge=0.0, le=1.0, description="What sampling temperature to use, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.")
@@ -120,9 +123,7 @@ class ChatCompletion(BaseModel):
         default_factory=datetime.now,
         description="The date and time the chat completion was created",
     )
-    last_updated_by: str = Field(
-        ..., description="The user who last updated the chat completion"
-    )
+    last_updated_by: str = Field(..., description="The user who last updated the chat completion")
     last_updated_date: datetime = Field(
         default_factory=datetime.now,
         description="The date and time the chat completion was last updated",

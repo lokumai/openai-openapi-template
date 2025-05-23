@@ -46,9 +46,7 @@ def generate_api_key(username: str, secret_key: str) -> str:
     logger.debug(f"Secret key: {secret_key}")
 
     # Add HMAC signature for additional security
-    signature = hmac.new(
-        secret_key.encode(), json_str.encode(), hashlib.sha256
-    ).hexdigest()
+    signature = hmac.new(secret_key.encode(), json_str.encode(), hashlib.sha256).hexdigest()
 
     logger.debug(f"Generated signature: {signature}")
 
@@ -69,9 +67,7 @@ def save_api_key(username: str, api_key: str, timestamp: int):
         api_key (str): Generated API key
         timestamp (int): Creation timestamp
     """
-    formatted_timestamp = datetime.fromtimestamp(timestamp).strftime(
-        "%Y-%m-%d %H:%M:%S"
-    )
+    formatted_timestamp = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
     with open("api_keys.txt", "a") as f:
         f.write(f"Username: {username}\n")
         f.write(f"API Key: {api_key}\n")
@@ -100,9 +96,7 @@ def main():
         print('curl -X POST "http://localhost:8000/v1/chat/completions" \\')
         print(f'     -H "Authorization: Bearer {api_key}" \\')
         print('     -H "Content-Type: application/json" \\')
-        print(
-            '     -d \'{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello!"}]}\''
-        )
+        print('     -d \'{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello!"}]}\'')
 
     except argparse.ArgumentError:
         print("Please provide a username and secret key", file=sys.stderr)

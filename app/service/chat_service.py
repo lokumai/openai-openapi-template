@@ -17,13 +17,9 @@ class ChatService:
     def __init__(self):
         self.chat_repository = ChatRepository()
 
-    async def handle_chat_completion(
-        self, request: ChatCompletionRequest
-    ) -> ChatCompletionResponse:
+    async def handle_chat_completion(self, request: ChatCompletionRequest) -> ChatCompletionResponse:
         last_user_message = request.messages[-1].content
-        response_content = (
-            f"TODO implement ai-agent response for this message: {last_user_message}"
-        )
+        response_content = f"TODO implement ai-agent response for this message: {last_user_message}"
         username = "admin"
 
         entity = ChatCompletion(**request.model_dump())
@@ -38,24 +34,29 @@ class ChatService:
         entity = self.chat_repository.save(entity)
 
         result = ChatCompletionResponse(**entity.model_dump())
-        messages = [
-            MessageResponse(**{"role": "assistant", "content": response_content})
-        ]  # TODO: implement ai-agent response
+        messages = [MessageResponse(**{"role": "assistant", "content": response_content})]  # TODO: implement ai-agent response
         result.choices = [
             ChoiceResponse(
-                **{"index": 0, "message": messages[0], "finish_reason": "stop"}
+                **{
+                    "index": 0,
+                    "message": messages[0],
+                    "finish_reason": "stop",
+                }
             )
         ]
         return result
 
     async def find(
-        self, query: dict, page: int, limit: int, sort: dict, project: dict = None
+        self,
+        query: dict,
+        page: int,
+        limit: int,
+        sort: dict,
+        project: dict = None,
     ) -> List[ChatCompletion]:
         return self.chat_repository.find(query, page, limit, sort, project)
 
-    async def find_by_id(
-        self, completion_id: str, project: dict = None
-    ) -> ChatCompletion:
+    async def find_by_id(self, completion_id: str, project: dict = None) -> ChatCompletion:
         return self.chat_repository.find_by_id(completion_id, project)
 
     async def find_messages(self, completion_id: str) -> List[ChatMessage]:

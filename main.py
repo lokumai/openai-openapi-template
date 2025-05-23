@@ -21,11 +21,7 @@ STORAGE_TYPE = env.str("STORAGE_TYPE", "mongodb")
 
 # Hugging Face Spaces için özel yapılandırma
 IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
-SPACE_URL = (
-    "https://lokumai-openai-openapi-template.hf.space"
-    if IS_HF_SPACE
-    else "http://localhost:7860"
-)
+SPACE_URL = "https://lokumai-openai-openapi-template.hf.space" if IS_HF_SPACE else "http://localhost:7860"
 
 
 @asynccontextmanager

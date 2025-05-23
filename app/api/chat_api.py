@@ -8,7 +8,10 @@ from app.schema.chat_schema import (
     MessageResponse,
     PlotResponse,
 )
-from app.schema.conversation import ConversationResponse, ConversationItemResponse
+from app.schema.conversation import (
+    ConversationResponse,
+    ConversationItemResponse,
+)
 from app.service.chat_service import ChatService
 from app.security.auth_service import AuthService
 from app.core.api_response import api_response
@@ -46,7 +49,8 @@ async def create_chat_completion(
 @router.get("/chat/completions", response_model=List[ChatCompletionResponse])
 @api_response()
 async def list_chat_completions(
-    request: Request, username: str = Depends(auth_service.verify_credentials)
+    request: Request,
+    username: str = Depends(auth_service.verify_credentials),
 ):
     """
     Get all chat completions
@@ -66,7 +70,10 @@ async def list_chat_completions(
 
 
 # get a chat completion by id
-@router.get("/chat/completions/{completion_id}", response_model=ChatCompletionResponse)
+@router.get(
+    "/chat/completions/{completion_id}",
+    response_model=ChatCompletionResponse,
+)
 @api_response()
 async def retrieve_chat_completion(
     completion_id: str,
@@ -85,7 +92,8 @@ async def retrieve_chat_completion(
 
 # get all messages for a chat completion
 @router.get(
-    "/chat/completions/{completion_id}/messages", response_model=List[MessageResponse]
+    "/chat/completions/{completion_id}/messages",
+    response_model=List[MessageResponse],
 )
 @api_response()
 async def list_messages(
@@ -139,7 +147,8 @@ async def retrieve_plot(
 @router.get("/conversations", response_model=ConversationResponse)
 @api_response()
 async def list_conversations(
-    request: Request, username: str = Depends(auth_service.verify_credentials)
+    request: Request,
+    username: str = Depends(auth_service.verify_credentials),
 ):
     """
     Get all conversations
@@ -156,7 +165,10 @@ async def list_conversations(
 # get a conversation by id
 
 
-@router.get("/conversations/{completion_id}", response_model=ConversationItemResponse)
+@router.get(
+    "/conversations/{completion_id}",
+    response_model=ConversationItemResponse,
+)
 @api_response()
 async def retrieve_conversation(
     completion_id: str,

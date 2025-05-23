@@ -16,7 +16,10 @@ class LogConfig(BaseSettings):
         )
 
     model_config = SettingsConfigDict(
-        env_prefix="LOG_", env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_prefix="LOG_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
     )
 
     LEVEL: str = "DEBUG"

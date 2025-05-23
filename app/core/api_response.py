@@ -48,13 +48,9 @@ def url_to_filename(url: str, method: str) -> str:
     return result
 
 
-def get_mock_response(
-    url_path: str, python_module_name: str, python_method_name: str
-) -> Dict:
+def get_mock_response(url_path: str, python_module_name: str, python_method_name: str) -> Dict:
     """Get mock response from JSON file."""
-    logger.trace(
-        f"BEGIN: url_path: {url_path} python_module_name: {python_module_name} python_method_name: {python_method_name}"
-    )
+    logger.trace(f"BEGIN: url_path: {url_path} python_module_name: {python_module_name} python_method_name: {python_method_name}")
     filename = None
     file_path = None
     try:
@@ -115,12 +111,12 @@ def api_response():
             if USE_MOCK:
                 python_method_name = func.__name__
                 python_module_name = func.__module__
-                logger.warning(
-                    f"Using mock response for {request.url.path} [{request.method}] > {python_module_name}.{python_method_name}"
-                )
+                logger.warning(f"Using mock response for {request.url.path} [{request.method}] > {python_module_name}.{python_method_name}")
                 try:
                     result = get_mock_response(
-                        request.url.path, python_module_name, python_method_name
+                        request.url.path,
+                        python_module_name,
+                        python_method_name,
                     )
                     logger.trace(f"Mock response: {result}")
                     return result

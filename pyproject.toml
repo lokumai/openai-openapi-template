@@ -18,3 +18,7 @@ dependencies = [
     "requests>=2.32.3",
     "uvicorn>=0.34.2",
 ]
+
+# ruff line length
+[tool.ruff]
+line-length = 145

@@ -15,11 +15,7 @@ env.read_env()
 
 # Hugging Face Spaces için özel yapılandırma
 IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
-SPACE_URL = (
-    "https://lokumai-openai-openapi-template.hf.space"
-    if IS_HF_SPACE
-    else "http://localhost:7860"
-)
+SPACE_URL = "https://lokumai-openai-openapi-template.hf.space" if IS_HF_SPACE else "http://localhost:7860"
 
 # API Configuration
 BASE_URL = env.str("BASE_URL", SPACE_URL)
@@ -42,6 +38,7 @@ def app_auth(username: str, password: str) -> bool:
     logger.debug(f"Entering app_auth: Username: {username}")
     logger.debug(f"AUTH_USERNAME: {AUTH_USERNAME}")
     return username == AUTH_USERNAME and password == AUTH_PASSWORD
+
 
 # Custom CSS for fonts
 CUSTOM_CSS = """
@@ -183,7 +180,7 @@ class ChatAPI:
                 logger.trace("######################## BEGIN API response #########################")
                 logger.trace(json.dumps(result, indent=4))
                 logger.trace("######################## END API response #########################")
-                
+
                 if "choices" in result and len(result["choices"]) > 0:
                     message = result["choices"][0].get("message", {})
                     figure = message.get("figure", None)
@@ -191,7 +188,9 @@ class ChatAPI:
                     content = message.get("content", "Content not found")
                     logger.trace(f"Last message: {content}")
                     return MessageResponse(
-                        status=MessageStatus.SUCCESS, content=content, figure=figure
+                        status=MessageStatus.SUCCESS,
+                        content=content,
+                        figure=figure,
                     )
                 else:
                     logger.error("Invalid API response")
@@ -200,7 +199,7 @@ class ChatAPI:
                         content="",
                         error="Invalid API response",
                     )
-                
+
         except httpx.TimeoutException:
             logger.error("API request timed out")
             return MessageResponse(
@@ -211,7 +210,9 @@ class ChatAPI:
         except Exception as e:
             logger.error(f"Error: {str(e)}")
             return MessageResponse(
-                status=MessageStatus.ERROR, content="", error=f"Error: {str(e)}"
+                status=MessageStatus.ERROR,
+                content="",
+                error=f"Error: {str(e)}",
             )
 
 
@@ -276,13 +277,11 @@ class ChatInterface:
                     last_message = gr.Textbox(label="Last Message", interactive=False)
 
             # Event handlers
-            async def user_message(
-                message: str, history: List[List[str]]
-            ) -> Tuple[List[List[str]], str, str, str, object]:
+            async def user_message(message: str, history: List[List[str]]) -> Tuple[List[List[str]], str, str, str, object]:
                 """Handle user message submission"""
                 if not message.strip():
                     return history, "", "Please enter a message.", "", None
-                
+
                 logger.debug(f"User message: {message}")
 
                 history.append([message, ""])
@@ -301,14 +300,24 @@ class ChatInterface:
                         except Exception as e:
                             logger.error(f"Error creating plotly figure: {e}")
                             figure = None
-                            history[-1][1] += (
-                                "\n\n⚠️ Graph data is not valid, cannot be displayed."
-                            )
+                            history[-1][1] += "\n\n⚠️ Graph data is not valid, cannot be displayed."
                     history[-1][1] = content
-                    return history, "", "Message sent successfully.", content, figure
+                    return (
+                        history,
+                        "",
+                        "Message sent successfully.",
+                        content,
+                        figure,
+                    )
                 else:
                     history[-1][1] = f"❌ {response.error}"
-                    return history, "", f"Error: {response.error}", "", None
+                    return (
+                        history,
+                        "",
+                        f"Error: {response.error}",
+                        "",
+                        None,
+                    )
 
             def clear_history() -> Tuple[List[List[str]], str, str, str, dict]:
                 """Clear chat history"""

@@ -52,7 +52,10 @@ class AuthService:
                 )
 
             # Debug için JSON verilerini logla
-            json_data = {"username": data["username"], "created_at": data["created_at"]}
+            json_data = {
+                "username": data["username"],
+                "created_at": data["created_at"],
+            }
             json_str = json.dumps(json_data)
             logger.trace(f"JSON data for signature: {json_str}")
             logger.trace(f"Secret key: {self.secret.KEY}")
