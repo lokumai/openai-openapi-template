@@ -30,7 +30,7 @@ class ChatCompletionBase(BaseModel):
     """
 
     completion_id: str = Field(
-        ...,
+        None,
         description="The unique identifier for the chat completion. When starting a new chat, this will be a new UUID. When continuing a previous chat, this will be the same as the previous chat completion id.",
     )
 
@@ -40,7 +40,7 @@ class ChatCompletionRequest(ChatCompletionBase):
     Represents a chat completion request. Starting a new chat or continuing a previous chat.
     """
 
-    model: str = Field(..., description="The model to use for the chat completion")
+    model: str = Field(None, description="The model to use for the chat completion")
     messages: List[MessageRequest] = Field(..., description="The messages to use for the chat completion")
     stream: bool = Field(..., description="Whether to stream the chat completion")
 
