@@ -1,3 +1,4 @@
+import json
 import gradio as gr
 import environs
 import httpx
@@ -145,7 +146,7 @@ class ChatAPI:
         Returns:
             MessageResponse: The response from the API
         """
-        logger.debug(f"Calling chat API with prompt: {prompt}")
+        logger.trace(f"Calling chat API with prompt: {prompt}")
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post(
@@ -170,14 +171,16 @@ class ChatAPI:
                     )
 
                 result = response.json()
-                logger.debug(f"API response: {result}")
-
+                logger.trace("######################## BEGIN API response #########################")
+                logger.trace(json.dumps(result, indent=4))
+                logger.trace("######################## END API response #########################")
+                
                 if "choices" in result and len(result["choices"]) > 0:
                     message = result["choices"][0].get("message", {})
                     figure = message.get("figure", None)
-                    logger.debug(f"Figure: {figure}")
+                    logger.trace(f"Figure: {figure}")
                     content = message.get("content", "Content not found")
-                    logger.info(f"Last message: {content}")
+                    logger.trace(f"Last message: {content}")
                     return MessageResponse(
                         status=MessageStatus.SUCCESS, content=content, figure=figure
                     )
@@ -188,7 +191,7 @@ class ChatAPI:
                         content="",
                         error="Invalid API response",
                     )
-
+                
         except httpx.TimeoutException:
             logger.error("API request timed out")
             return MessageResponse(
@@ -270,6 +273,8 @@ class ChatInterface:
                 """Handle user message submission"""
                 if not message.strip():
                     return history, "", "Please enter a message.", "", None
+                
+                logger.debug(f"User message: {message}")
 
                 history.append([message, ""])
                 response = await self.chat_api.send_message(message)
@@ -277,13 +282,13 @@ class ChatInterface:
                 if response.status == MessageStatus.SUCCESS:
                     content = response.content
                     figure_data = response.figure
-                    logger.debug(f"Figure data: {figure_data}")
+                    logger.trace(f"Figure data: {figure_data}")
                     figure = None
                     if isinstance(figure_data, dict):
-                        logger.debug(f"Plotly input: {figure_data}")
+                        logger.trace(f"Plotly input: {figure_data}")
                         try:
                             figure = go.Figure(figure_data)
-                            logger.debug(f"Plotly figure: {figure.to_dict()}")
+                            logger.trace(f"Plotly figure: {figure.to_dict()}")
                         except Exception as e:
                             logger.error(f"Error creating plotly figure: {e}")
                             figure = None
