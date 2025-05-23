@@ -53,7 +53,12 @@ git clone https://github.com/lokumai/openai-openapi-template.git
 uv sync
 ```
 
-3. Run the server:
+3. Start MongoDB:
+```bash
+docker compose -f docker/mongodb-docker-compose.yaml up -d
+```
+
+4. Run on your local machine:
 ```bash
 
 ./run.sh
