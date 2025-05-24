@@ -8,7 +8,7 @@ from app.config.log import log_config
 from loguru import logger
 from environs import Env
 from contextlib import asynccontextmanager
-from app.db.client import mongodb
+from app.db.client import db_client
 from gradio_chatbot import build_gradio_app, app_auth
 import gradio as gr
 import os
@@ -33,14 +33,12 @@ async def lifespan(app: FastAPI):
     """
     # Startup
     logger.info("Starting up application...")
-    if DB_DATABASE_TYPE == "mongodb":
-        await mongodb.connect()
+    await db_client.connect()
     yield
 
     # Shutdown
     logger.info("Shutting down application...")
-    if DB_DATABASE_TYPE == "mongodb":
-        await mongodb.close()
+    await db_client.close()
 
 
 VERSION = "0.3.0"

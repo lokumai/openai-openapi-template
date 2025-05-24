@@ -1,11 +1,11 @@
 from typing import List
-from app.db.client import MongoDBClient
+from app.db.client import db_client
 from app.model.chat_model import ChatMessage, ChatCompletion
 
 
 class ChatRepository:
     def __init__(self):
-        self.db = MongoDBClient().db
+        self.db = db_client.db
         self.collection = "chat_completion"
 
     def save(self, entity: ChatCompletion) -> ChatCompletion:

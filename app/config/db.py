@@ -11,9 +11,8 @@ class DBConfig(BaseSettings):
     )
 
 
-    DATABASE_TYPE: Literal["mongodb", "mongita_disk", "mongita_memory"] = "mongodb"
+    DATABASE_TYPE: str = "mongodb"
     DATABASE_NAME: str = "openai_chatbot_api"
-    MONGITA_DB_PATH: Optional[str] = None
 
     MONGO_USER: str = "root"
     MONGO_PASSWORD: str = "rootPass"
