@@ -12,6 +12,7 @@ from app.db.factory import db_client
 from gradio_chatbot import build_gradio_app, app_auth
 import gradio as gr
 import os
+from app.core.initial_setup.setup import InitialSetup
 
 print(log_config.get_log_level())
 
@@ -34,6 +35,11 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting up application...")
     await db_client.connect()
+    
+    # Run initial setup if database type is embedded
+    initial_setup = InitialSetup()
+    await initial_setup.setup()
+    
     yield
 
     # Shutdown

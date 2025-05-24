@@ -5,7 +5,7 @@ from enum import Enum
 from pydantic import BaseModel
 from datetime import datetime
 from pydantic import Field
-from typing import List
+from typing import List, Optional
 
 # Chat completion payload example
 # {
@@ -90,11 +90,7 @@ class ChatCompletion(BaseModel):
     A chat completion.
     """
 
-    completion_id: str = Field(
-        ...,
-        description="The unique identifier for the chat completion",
-        default_factory=lambda: str(uuid.uuid4()),
-    )
+    completion_id: Optional[str] = Field(None, description="The unique identifier for the chat completion")
 
     # openai compatible fields
     model: str = Field(
