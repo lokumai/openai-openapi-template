@@ -1,5 +1,6 @@
 # chat model for chat completion database
 
+import json
 import uuid
 from enum import Enum
 from pydantic import BaseModel
@@ -29,7 +30,7 @@ from typing import List, Optional
 #     },
 #     {
 #       "role": "assistant",
-#       "content": "**Rome Hotel**: Consider **Hotel Artemide**, a centrally located 4-star hotel with rates around €80-100 per night on a moderate budget. It’s near Termini Station and within walking distance of major sites like the Trevi Fountain. Book directly for potential deals.\n\n**Florence Food Markets**:\n- **Mercato Centrale**: A vibrant indoor market with food stalls offering fresh pasta, pizza, and local cheeses. Try a plate of fresh tortellini (~€8) or focaccia. Open daily, great for lunch.\n- **Sant’Ambrogio Market**: Less touristy, with fresh produce and local specialties like porchetta sandwiches (~€5). It’s perfect for an authentic experience, located near Santa Croce. Open mornings until 2 PM.\n\n**Tip**: In Florence, pair market visits with a stop at a nearby café for espresso (~€1.50) to soak in the local vibe."
+#       "content": "**Rome Hotel**: Consider **Hotel Artemide**, a centrally located 4-star hotel with rates around €80-100 per night on a moderate budget. It's near Termini Station and within walking distance of major sites like the Trevi Fountain. Book directly for potential deals.\n\n**Florence Food Markets**:\n- **Mercato Centrale**: A vibrant indoor market with food stalls offering fresh pasta, pizza, and local cheeses. Try a plate of fresh tortellini (~€8) or focaccia. Open daily, great for lunch.\n- **Sant'Ambrogio Market**: Less touristy, with fresh produce and local specialties like porchetta sandwiches (~€5). It's perfect for an authentic experience, located near Santa Croce. Open mornings until 2 PM.\n\n**Tip**: In Florence, pair market visits with a stop at a nearby café for espresso (~€1.50) to soak in the local vibe."
 #     },
 #     {
 #       "role": "user",
@@ -37,8 +38,8 @@ from typing import List, Optional
 #     },
 #     {
 #       "role": "assistant",
-#       "content": "**Between Cities**: Take a high-speed train (Italo or Trenitalia) from Rome to Florence. Book in advance for tickets around €25-35 one-way (1.5 hours). Trains depart from Roma Termini and arrive at Firenze Santa Maria Novella. Check schedules on trenitalia.com or italo.it.\n\n**Within Florence**: Florence is compact and walkable, so you won’t need much public transport. For longer distances (e.g., to Piazzale Michelangelo), use ATAF buses (~€1.50 per ride, buy tickets at tabaccherie). Alternatively, rent a bike (~€10/day) for a scenic way to explore. Taxis are pricier (~€10-15 for short trips), so stick to walking or buses for budget travel.",
-#        "plot": {
+#       "content": "**Between Cities**: Take a high-speed train (Italo or Trenitalia) from Rome to Florence. Book in advance for tickets around €25-35 one-way (1.5 hours). Trains depart from Roma Termini and arrive at Firenze Santa Maria Novella. Check schedules on trenitalia.com or italo.it.\n\n**Within Florence**: Florence is compact and walkable, so you won't need much public transport. For longer distances (e.g., to Piazzale Michelangelo), use ATAF buses (~€1.50 per ride, buy tickets at tabaccherie). Alternatively, rent a bike (~€10/day) for a scenic way to explore. Taxis are pricier (~€10-15 for short trips), so stick to walking or buses for budget travel.",
+#        "figure": {
 #            "data": {},
 #            "layout": {}
 #        }
@@ -79,10 +80,29 @@ class ChatMessage(BaseModel):
         ],
     )
     content: str = Field(..., description="The content of the message")
-    timestamp: datetime = Field(
+    figure: Optional[dict] = Field(None, description="The figure of the message")
+    created_date: datetime = Field(
         default_factory=datetime.now,
         description="The timestamp of the message",
     )
+
+    # write a formattet and graceful to string method
+    def __str__(self):
+        return f"""
+        ChatMessage(
+            message_id={self.message_id},
+            role={self.role},
+            content={self.content},
+            figure={json.dumps(self.figure, indent=4)},
+            created_date={self.created_date})
+            """
+    
+    def __repr__(self):
+        return self.__str__()
+    
+    def __format__(self, format_spec):
+        return self.__str__()
+
 
 
 class ChatCompletion(BaseModel):
@@ -124,3 +144,25 @@ class ChatCompletion(BaseModel):
         default_factory=datetime.now,
         description="The date and time the chat completion was last updated",
     )
+
+    # write a formattet and graceful to string method
+    def __str__(self):
+        return f"""
+        ChatCompletion(
+            completion_id={self.completion_id},
+            model={self.model},
+            messages={self.messages},
+            created_by={self.created_by},
+            created_date={self.created_date},
+            last_updated_by={self.last_updated_by},
+            last_updated_date={self.last_updated_date})
+            """
+
+
+    def __repr__(self):
+        return self.__str__()
+
+
+    def __format__(self, format_spec):
+        return self.__str__()
+    

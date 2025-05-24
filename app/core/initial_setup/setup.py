@@ -42,14 +42,17 @@ class InitialSetup:
         chat_completions = self._load_initial_data()
         for completion in chat_completions:
             try:
-                self.chat_repository.save(completion)
+                await self.chat_repository.save(completion)
                 logger.info(f"Saved initial chat completion: {completion.completion_id}")
             except Exception as e:
                 logger.error(f"Error saving chat completion {completion.completion_id}: {e}")
         
         # query of the saved chat completions
-        saved_chat_completions = self.chat_repository.find()
-        logger.info(f"Saved chat completions: {saved_chat_completions}")
+        saved_chat_completions = await self.chat_repository.find()
+        logger.debug("********** Begin of Saved chat completions**********")
+        logger.trace(f"{saved_chat_completions}")
+        logger.debug(f"saved_chat_completions[0].messages[0]: {saved_chat_completions[0].messages[0]}")
+        logger.debug("********** End of Saved chat completions**********")
 
 
-        logger.info("Initial setup completed successfully") 
+        logger.info("Initial setup completed successfully for embedded database") 
