@@ -8,7 +8,7 @@ from app.config.log import log_config
 from loguru import logger
 from environs import Env
 from contextlib import asynccontextmanager
-from app.db.client import db_client
+from app.db.factory import db_client
 from gradio_chatbot import build_gradio_app, app_auth
 import gradio as gr
 import os

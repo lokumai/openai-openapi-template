@@ -1,5 +1,5 @@
 from typing import List
-from app.db.client import db_client
+from app.db.factory import db_client
 from app.model.chat_model import ChatMessage, ChatCompletion
 
 
@@ -25,14 +25,7 @@ class ChatRepository:
 
         return entity
 
-    def find(
-        self,
-        query: dict,
-        page: int = 1,
-        limit: int = 10,
-        sort: dict = None,
-        project: dict = None,
-    ) -> List[ChatCompletion]:
+    def find(self, query: dict, page: int = 1, limit: int = 10, sort: dict = None, project: dict = None) -> List[ChatCompletion]:
         """
         Find a chat completion by a given query. with pagination
         Example : query = {"created_by": "admin"}
