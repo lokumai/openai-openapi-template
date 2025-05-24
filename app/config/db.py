@@ -10,7 +10,6 @@ class DBConfig(BaseSettings):
         extra="ignore",
     )
 
-
     DATABASE_TYPE: Literal["mongodb", "embedded"] = "embedded"
     DATABASE_NAME: str = "openai_chatbot_api"
 
@@ -19,8 +18,6 @@ class DBConfig(BaseSettings):
     MONGO_HOST: str = "localhost"
     MONGO_PORT: int = 27017
     MONGO_URI: str = f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}/{DATABASE_NAME}"
-    
-
 
     def get_mongo_uri(self) -> str:
         return self.MONGO_URI

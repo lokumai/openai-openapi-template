@@ -35,11 +35,11 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting up application...")
     await db_client.connect()
-    
+
     # Run initial setup if database type is embedded
     initial_setup = InitialSetup()
     await initial_setup.setup()
-    
+
     yield
 
     # Shutdown

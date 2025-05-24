@@ -1,7 +1,8 @@
 # mongodb client with motor and pymongo
 
 from abc import ABC, abstractmethod
-from typing import  Protocol
+from typing import Protocol
+
 
 class DatabaseClientProtocol(Protocol):
     """
@@ -19,6 +20,7 @@ class DatabaseClientProtocol(Protocol):
     - https://www.python.org/dev/peps/pep-0544/
     - https://realpython.com/duck-typing-python/
     """
+
     async def connect(self) -> None: ...
     async def close(self) -> None: ...
     @property

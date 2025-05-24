@@ -5,6 +5,7 @@ from app.db.mongo import PersistentMongoClient
 from app.db.embedded import EmbeddedMongoClient
 from app.config.db import db_config
 
+
 class DatabaseClientFactory:
     """Factory class for creating database clients"""
 
@@ -33,9 +34,6 @@ class DatabaseClientFactory:
                 cls._client = EmbeddedMongoClient()
         logger.info(f"Returning DatabaseClientFactory.client. Host: {cls._client.client.host}")
         return cls._client
-    
-
-
 
 
 # Global instance

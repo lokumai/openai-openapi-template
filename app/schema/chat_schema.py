@@ -1,18 +1,5 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
-from enum import Enum
-
-
-class ChoiceSchemaFinishReasonType(str, Enum):
-    STOP = "stop"
-    LENGTH = "length"
-    CONTENT_FILTER = "content_filter"
-
-
-class MessageSchemaRoleType(str, Enum):
-    USER = "user"
-    ASSISTANT = "assistant"
-    SYSTEM = "system"
 
 
 class MessageRequest(BaseModel):
@@ -20,15 +7,15 @@ class MessageRequest(BaseModel):
     Represents a message in a chat completion.
     """
 
-    role: MessageSchemaRoleType = Field(..., description="The role of the message")
-    content: str = Field(..., description="The content of the message")
-
+    role: Optional[str] = Field(None, description="The role of the message", examples=["user", "assistant", "system"])
+    content: Optional[str] = Field(None, description="The content of the message")
 
 
 class ChatCompletionRequest(BaseModel):
     """
     Represents a chat completion request. Starting a new chat or continuing a previous chat.
     """
+
     completion_id: Optional[str] = Field(
         None,
         description="The unique identifier for the chat completion. When starting a new chat, this will be a new UUID. When continuing a previous chat, this will be the same as the previous chat completion id.",
@@ -44,15 +31,16 @@ class MessageResponse(BaseModel):
     """
 
     message_id: Optional[str] = Field(None, description="The unique identifier for the message")
-    role: Optional[MessageSchemaRoleType] = Field(None, description="The role of the message")
+    role: Optional[str] = Field(None, description="The role of the message", examples=["user", "assistant", "system"])
     content: Optional[str] = Field(None, description="The content of the message")
     figure: Optional[dict] = Field(None, description="The figure data to be visualized")
 
 
 class ChoiceResponse(BaseModel):
-    finish_reason: Optional[ChoiceSchemaFinishReasonType] = Field(
+    finish_reason: Optional[str] = Field(
         None,
         description="The reason the model stopped generating tokens. This will be `stop` if the model hit a natural stop point or a provided stop sequence, `length` if the maximum number of tokens specified in the request was reached, `content_filter` if content was omitted due to a flag from our content filters",
+        examples=["stop", "length", "content_filter"],
     )
     index: Optional[int] = Field(None, description="The index of the choice in the list of choices.")
     message: Optional[MessageResponse] = Field(None, description="The message to use for the chat completion")

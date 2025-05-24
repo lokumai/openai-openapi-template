@@ -1,10 +1,8 @@
-from typing import Optional 
+from typing import Optional
 from mongomock_motor import AsyncMongoMockClient
 from app.config.db import db_config
 from loguru import logger
 from app.db.client import DatabaseClient
-
-
 
 
 class EmbeddedMongoClient(DatabaseClient):

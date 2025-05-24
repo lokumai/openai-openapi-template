@@ -1,5 +1,5 @@
-from app.config.secret import secret_config as secret
-from fastapi import HTTPException, status, Security
+from app.config.security_config import get_security_config
+from fastapi import HTTPException, status, Security, Depends
 from fastapi.security import APIKeyHeader
 from loguru import logger
 import base64
@@ -12,13 +12,14 @@ api_key_header = APIKeyHeader(
     name="Authorization",
     scheme_name="ApiKeyAuth",
     description="API key in the format: sk-{username}-{base64_encoded_data}",
+    auto_error=False  # API key olmadığında otomatik hata vermesini engelle
 )
 
 
 class AuthService:
-    def __init__(self):
-        self.secret = secret
+    def __init__(self): 
         self.api_key_header = api_key_header
+        self.security_config = get_security_config()
 
     def decode_api_key(self, api_key: str) -> str:
         """Decode API key to extract username and verify signature."""
@@ -58,10 +59,10 @@ class AuthService:
             }
             json_str = json.dumps(json_data)
             logger.trace(f"JSON data for signature: {json_str}")
-            logger.trace(f"Secret key: {self.secret.KEY}")
+            logger.trace(f"Secret key: {self.security_config.SECRET_KEY}")
 
             expected_signature = hmac.new(
-                self.secret.KEY.encode(),
+                self.security_config.SECRET_KEY.encode(),
                 json_str.encode(),
                 hashlib.sha256,
             ).hexdigest()
@@ -86,11 +87,21 @@ class AuthService:
                 detail=f"Invalid API key: {str(e)}",
             )
 
-    def verify_credentials(self, api_key: str = Security(api_key_header)) -> str:
+    async def verify_credentials(self, api_key: str =  Security(api_key_header)) -> str:
         """Verify API key and extract username."""
         logger.trace(f"BEGIN: api_key: {api_key}")
+        
+        if not self.security_config.ENABLED:
+            logger.info("Security is disabled, using default username: " + self.security_config.DEFAULT_USERNAME)
+            return self.security_config.DEFAULT_USERNAME
+        
+        if not api_key:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="API key is required when security is enabled",
+            )
+            
         username = self.decode_api_key(api_key)
-
         result = username
         logger.trace(f"END: result: {result}")
         return result

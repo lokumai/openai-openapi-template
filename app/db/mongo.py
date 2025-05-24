@@ -4,6 +4,7 @@ from app.config.db import db_config
 from loguru import logger
 from app.db.client import DatabaseClient
 
+
 class PersistentMongoClient(DatabaseClient):
     """Real MongoDB client implementation"""
 

@@ -22,13 +22,16 @@ router = APIRouter(prefix="/v1", tags=["chat"])
 service = ChatService()
 auth_service = AuthService()
 
+
 class VersionResponse(BaseModel):
     version: str = "0.0.1"
+
 
 # version api from pyproject.toml
 @router.get("/version", response_model=VersionResponse)
 async def get_version():
     return VersionResponse()
+
 
 ################
 # chat completion api list

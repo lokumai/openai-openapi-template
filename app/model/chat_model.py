@@ -1,12 +1,9 @@
 # chat model for chat completion database
 
 import json
-import uuid
-from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
-from pydantic import Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 # Chat completion payload example
 # {
@@ -54,55 +51,32 @@ from typing import List, Optional
 # }
 
 
-class MessageRole(str, Enum):
-    USER = "user"
-    ASSISTANT = "assistant"
-    SYSTEM = "system"
-
-
 class ChatMessage(BaseModel):
     """
     A message in a chat completion.
     """
 
-    message_id: str = Field(
-        ...,
-        description="The unique identifier for the message",
-        default_factory=lambda: str(uuid.uuid4()),
-    )
-    role: MessageRole = Field(
-        ...,
-        description="The role of the message sender",
-        examples=[
-            MessageRole.USER,
-            MessageRole.ASSISTANT,
-            MessageRole.SYSTEM,
-        ],
-    )
+    message_id: str = Field(..., description="The unique identifier for the message")
+    role: Optional[str] = Field(None, description="The role of the message sender", examples=["user", "assistant", "system"])
     content: str = Field(..., description="The content of the message")
-    figure: Optional[dict] = Field(None, description="The figure of the message")
-    created_date: datetime = Field(
-        default_factory=datetime.now,
-        description="The timestamp of the message",
-    )
+    figure: Optional[Dict[str, Any]] = Field(None, description="The figure data for visualization")
+    created_date: datetime = Field(default_factory=datetime.now, description="The timestamp of the message")
 
-    # write a formattet and graceful to string method
     def __str__(self):
         return f"""
         ChatMessage(
             message_id={self.message_id},
             role={self.role},
             content={self.content},
-            figure={json.dumps(self.figure, indent=4)},
+            figure={json.dumps(self.figure, indent=4) if self.figure else None},
             created_date={self.created_date})
             """
-    
+
     def __repr__(self):
         return self.__str__()
-    
+
     def __format__(self, format_spec):
         return self.__str__()
-
 
 
 class ChatCompletion(BaseModel):
@@ -110,14 +84,11 @@ class ChatCompletion(BaseModel):
     A chat completion.
     """
 
+    #id: Optional[str] = Field(None, alias="_id", description="MongoDB document ID")
     completion_id: Optional[str] = Field(None, description="The unique identifier for the chat completion")
 
     # openai compatible fields
-    model: str = Field(
-        ...,
-        description="The model used for the chat completion",
-        examples=["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"],
-    )
+    model: Optional[str] = Field(None, description="The model used for the chat completion", examples=["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"])
     messages: List[ChatMessage] = Field(..., description="The messages in the chat completion")
 
     # not implemented yet
@@ -128,27 +99,36 @@ class ChatCompletion(BaseModel):
     # presence_penalty: float = Field(default=0.0, ge=-2.0, le=2.0, description="Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.")
     # n: int = Field(default=1, ge=1, le=10, description="How many chat completion choices to generate for each prompt.")
 
-    stream: bool = Field(
-        default=False,
-        description="If set to true, the model response data will be streamed to the client as it is generated using [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format). See the [Streaming section below](/docs/api-reference/chat/streaming) for more information, along with the [streaming responses](/docs/guides/streaming-responses) guide for more information on how to handle the streaming events. ",
+    stream: Optional[bool] = Field(
+        None,
+        description="If set to true, the model response data will be streamed to the client as it is generated using server-sent events.",
     )
 
+    title: Optional[str] = Field(None, description="The title of the chat completion")
+    object_field: Optional[str] = Field(None, alias="object_field", description="The object field of the chat completion")
+    is_archived: Optional[bool] = Field(None, description="Whether the chat completion is archived")
+    is_starred: Optional[bool] = Field(None, description="Whether the chat completion is starred")
+
     # audit fields
-    created_by: str = Field(..., description="The user who created the chat completion")
+    created_by: Optional[str] = Field(None, description="The user who created the chat completion")
     created_date: datetime = Field(
         default_factory=datetime.now,
         description="The date and time the chat completion was created",
     )
-    last_updated_by: str = Field(..., description="The user who last updated the chat completion")
-    last_updated_date: datetime = Field(
+    last_updated_by: Optional[str] = Field(None, description="The user who last updated the chat completion")
+    last_updated_date: Optional[datetime] = Field(
         default_factory=datetime.now,
         description="The date and time the chat completion was last updated",
     )
 
-    # write a formattet and graceful to string method
+
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+
     def __str__(self):
         return f"""
-        ChatCompletion(
+        ChatCompletion( 
             completion_id={self.completion_id},
             model={self.model},
             messages={self.messages},
@@ -158,11 +138,8 @@ class ChatCompletion(BaseModel):
             last_updated_date={self.last_updated_date})
             """
 
-
     def __repr__(self):
         return self.__str__()
 
-
     def __format__(self, format_spec):
         return self.__str__()
-    
