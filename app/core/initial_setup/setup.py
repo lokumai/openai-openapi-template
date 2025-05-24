@@ -7,7 +7,7 @@ from app.repository.chat_repository import ChatRepository
 from app.config.db import db_config
 
 class InitialSetup:
-    """Initial setup manager for the application"""
+    """Initial setup manager for the application when database type is embedded"""
     
     def __init__(self):
         self._chat_repository: Optional[ChatRepository] = None

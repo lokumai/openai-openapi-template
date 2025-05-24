@@ -9,7 +9,7 @@ from app.schema.chat_schema import (
 )
 from app.model.chat_model import ChatCompletion, ChatMessage
 import uuid
-
+from loguru import logger
 from app.schema.conversation import ConversationResponse
 
 
@@ -31,7 +31,7 @@ class ChatService:
         entity.last_updated_by = username
         entity.last_updated_date = datetime.datetime.now()
 
-        entity = self.chat_repository.save(entity)
+        entity = await self.chat_repository.save(entity)
 
         result = ChatCompletionResponse(**entity.model_dump())
         messages = [MessageResponse(**{"role": "assistant", "content": response_content})]  # TODO: implement ai-agent response
@@ -46,21 +46,16 @@ class ChatService:
         ]
         return result
 
-    async def find(
-        self,
-        query: dict,
-        page: int,
-        limit: int,
-        sort: dict,
-        project: dict = None,
-    ) -> List[ChatCompletion]:
-        return self.chat_repository.find(query, page, limit, sort, project)
+    async def find(self, query: dict, page: int, limit: int, sort: dict, project: dict = None) -> List[ChatCompletionResponse]:
+        logger.debug(f"BEGIN SERVICE: find for query: {query}, page: {page}, limit: {limit}, sort: {sort}, project: {project}")
+        entities = await self.chat_repository.find(query, page, limit, sort, project)
+        return [ChatCompletionResponse(**entity.model_dump()) for entity in entities]
 
     async def find_by_id(self, completion_id: str, project: dict = None) -> ChatCompletion:
-        return self.chat_repository.find_by_id(completion_id, project)
+        return await self.chat_repository.find_by_id(completion_id, project)
 
     async def find_messages(self, completion_id: str) -> List[ChatMessage]:
-        return self.chat_repository.find_messages(completion_id)
+        return await self.chat_repository.find_messages(completion_id)
 
     # conversation service
     async def find_all_conversations(self, username: str) -> List[ConversationResponse]:

@@ -55,7 +55,6 @@ async def create_chat_completion(
 
 # get all chat completions
 @router.get("/chat/completions", response_model=List[ChatCompletionResponse])
-@api_response()
 async def list_chat_completions(
     request: Request,
     username: str = Depends(auth_service.verify_credentials),
@@ -64,7 +63,7 @@ async def list_chat_completions(
     Get all chat completions
     Summary: First load the chat interface(UI) for list of chat completions on the left side.
     """
-
+    logger.debug(f"BEGIN API: list_chat_completions for username: {username}")
     page: int = 0
     limit: int = 10
     sort: dict = {"created_date": -1}
