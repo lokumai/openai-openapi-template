@@ -7,69 +7,118 @@ import uuid
 import pymongo
 
 
+class DocumentNotFoundError(Exception):
+    """Raised when a document is not found in the database."""
+    pass
+
+# TODO: llm_model, llm_provider will come from .env file
+
 class ChatRepository:
     def __init__(self):
         logger.info("Initializing ChatRepository")
         self.db = db_client.db
         self.collection = "chat_completion"
 
+    async def _create(self, entity: ChatCompletion) -> ChatCompletion:
+        """
+        Create a new chat completion in the database.
+
+        Args:
+            entity (ChatCompletion): The chat completion entity to create
+
+        Returns:
+            ChatCompletion: The created chat completion
+
+        Raises:
+            Exception: If the chat completion is not created
+        """
+        logger.info(f"Creating new chat completion for user: {entity.created_by}")
+        
+        entity.completion_id = str(uuid.uuid4()) if entity.completion_id is None else entity.completion_id
+        entity_dict = entity.model_dump(by_alias=True) 
+
+        # MongoDB'ye kaydet
+        insert_result = await self.db.chat_completion.insert_one(entity_dict)
+        
+        if not insert_result.inserted_id:
+            logger.error(f"Failed to create new chat completion with ID: {entity.completion_id}")
+            raise Exception(f"Failed to create chat completion with ID: {entity.completion_id}")
+
+        logger.info(f"Successfully created new chat completion with ID: {entity.completion_id}")
+        return await self.find_by_id(entity.completion_id)
+
+    async def _update(self, entity: ChatCompletion) -> ChatCompletion:
+        """
+        Update an existing chat completion in the database.
+        
+        Args:
+            entity (ChatCompletion): The chat completion entity to update
+            
+        Returns:
+            ChatCompletion: The updated chat completion
+            
+        Raises:
+            ValueError: If completion_id is not provided
+            DocumentNotFoundError: If the document to update is not found
+        """
+        if not entity.completion_id:
+            raise ValueError("Cannot update chat completion without completion_id")
+
+        logger.info(f"Updating chat completion with ID: {entity.completion_id}")
+        
+        # these fields are not updatable
+        non_updatable_fields = {"created_date", "created_by", "completion_id"}
+        
+        # get the model data and remove the non-updatable fields
+        update_payload = {
+            k: v for k, v in entity.model_dump(by_alias=True).items() 
+            if k not in non_updatable_fields
+        }
+        
+        if not update_payload:
+            logger.warning(f"No updatable fields found for chat completion ID: {entity.completion_id}")
+            return await self.find_by_id(entity.completion_id)
+        
+        query = {"completion_id": entity.completion_id}
+        update = {"$set": update_payload}
+        
+        try:
+            result = await self.db.chat_completion.update_one(query, update)
+            
+            if result.matched_count == 0:
+                logger.error(f"Chat completion with ID {entity.completion_id} not found for update")
+                raise DocumentNotFoundError(f"Chat completion with ID {entity.completion_id} not found")
+                
+            if result.modified_count == 0:
+                logger.info(f"Chat completion with ID {entity.completion_id} matched but not modified")
+            else:
+                logger.info(f"Successfully updated chat completion with ID: {entity.completion_id}")
+                
+            return await self.find_by_id(entity.completion_id)
+            
+        except Exception as e:
+            logger.error(f"Error updating chat completion with ID {entity.completion_id}: {str(e)}")
+            raise
+
     async def save(self, entity: ChatCompletion) -> ChatCompletion:
         """
-        Upsert a chat completion into the database. If the chat completion already exists, it will be updated. If it does not exist, it will be created.
+        Save a chat completion to the database. If the chat completion has a completion_id,
+        it will be updated. Otherwise, a new chat completion will be created.
         """
         logger.debug(f"BEGIN REPO: save chat completion. username: {entity.created_by}, completion_id: {entity.completion_id}")
-        entity_dict = entity.model_dump(by_alias=True)
-        if entity.completion_id is None:
-            generated_completion_id = str(uuid.uuid4())
-            logger.warning(f"completion_id was None. Generated a new one: {generated_completion_id}")
-            entity.completion_id = generated_completion_id
-            entity_dict["completion_id"] = generated_completion_id
+        
+        try:
 
-            query = {"completion_id": generated_completion_id}
-            update = {
-                "$set": entity_dict,
-                "$setOnInsert": {
-                    "created_date": entity.created_date.isoformat()
-                    if entity.created_date
-                    else datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                    "created_by": entity.created_by,
-                },
-            }
-        else:
-            logger.debug(f"completion_id is not None. Using the existing one: {entity.completion_id}")
-            query = {"completion_id": entity.completion_id}
-            update_payload = entity_dict.copy()
-            update_payload.pop("created_date", None)  # created_date is not updatable
-            update_payload.pop("created_by", None)  # created_by is not updatable
-            update_payload.pop("completion_id", None)  # completion_id is not updatable
-            update = {"$set": update_payload}
-
-        upsert_result = await self.db.chat_completion.update_one(query, update, upsert=True)
-        logger.debug(f"upserted_entity. _id: {upsert_result.upserted_id}")
-
-        if upsert_result.upserted_id:
-            logger.info(f"Inserted new chat completion with ID: {entity.completion_id} (upserted_id: {upsert_result.upserted_id})")
-        elif upsert_result.modified_count > 0:
-            logger.info(f"Updated existing chat completion with ID: {entity.completion_id}")
-        elif upsert_result.matched_count > 0:
-            logger.info(f"Chat completion with ID: {entity.completion_id} matched but not modified.")
-        else:
-            logger.warning(
-                f"Chat completion with ID: {entity.completion_id} - No operation performed (no match, no upsert, no modification). This might be unexpected."
-            )
-
-        # save conversation if new chat completion
-        # TODO: save conversation
-
-        # after upsert, find the final db entity. if is there any trigger, default, etc. return the latest one
-        final_entity = await self.find_by_id(entity.completion_id)
-        if not final_entity:
-            # This should not happen, upsert should be successful.
-            logger.error(f"CRITICAL: Failed to retrieve chat completion {entity.completion_id} immediately after save operation.")
-            raise Exception(f"Data integrity issue: Could not find chat completion {entity.completion_id} after saving.")
-
-        logger.debug(f"END REPO: save chat completion, returning final_entity_id: {final_entity.completion_id}")
-        return final_entity
+            result = await self.find_by_id(entity.completion_id)
+            if result:
+                return await self._update(entity)
+            else:
+                return await self._create(entity)
+        except Exception as e:
+            logger.error(f"Error saving chat completion: {e}")
+            raise
+        finally:
+            logger.debug("END REPO: save chat completion")
 
     async def find(
         self, query: dict = {}, page: int = 1, limit: int = 10, sort: dict = {"created_date": -1}, projection: dict = None

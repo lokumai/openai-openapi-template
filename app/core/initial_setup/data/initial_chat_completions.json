@@ -9,7 +9,7 @@
             "is_starred": false,
             "created_by": "admin",
             "created_date": "2024-03-20T10:00:00Z",
-            "last_updated_by": "system",
+            "last_updated_by": "admin",
             "last_updated_date": "2024-03-20T11:00:00Z",
             "messages": [
                 {
@@ -48,7 +48,7 @@
             "is_starred": false,
             "created_by": "admin",
             "created_date": "2024-03-21T10:00:00Z",
-            "last_updated_by": "system",
+            "last_updated_by": "admin",
             "last_updated_date": "2024-03-21T11:00:00Z",
             "messages": [
                 {
@@ -87,7 +87,7 @@
             "is_starred": false,
             "created_by": "admin",
             "created_date": "2024-03-22T10:00:00Z",
-            "last_updated_by": "system",
+            "last_updated_by": "admin",
             "last_updated_date": "2024-03-22T11:00:00Z",
             "messages": [
                 {

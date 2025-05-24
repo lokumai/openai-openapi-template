@@ -68,9 +68,7 @@ class InitialSetup:
         saved_chat_completions = await self.chat_repository.find()
         logger.debug("********** Begin of Saved chat completions**********")
         logger.trace(f"{saved_chat_completions}")
-        chat = saved_chat_completions[0]
-        chat.messages = []
-        logger.debug(f"saved_chat_completions[0] : {chat}")
+
         logger.debug("********** End of Saved chat completions**********")
 
         logger.info("Initial setup completed successfully for embedded database")

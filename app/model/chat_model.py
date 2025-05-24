@@ -1,6 +1,7 @@
 # chat model for chat completion database
 
 import json
+from bson import ObjectId
 from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional, Dict, Any
@@ -83,8 +84,7 @@ class ChatCompletion(BaseModel):
     """
     A chat completion.
     """
-
-    #id: Optional[str] = Field(None, alias="_id", description="MongoDB document ID")
+    id: Optional[ObjectId] = Field(alias="_id", default_factory=ObjectId, description="MongoDB unique identifier")
     completion_id: Optional[str] = Field(None, description="The unique identifier for the chat completion")
 
     # openai compatible fields
@@ -99,32 +99,36 @@ class ChatCompletion(BaseModel):
     # presence_penalty: float = Field(default=0.0, ge=-2.0, le=2.0, description="Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics.")
     # n: int = Field(default=1, ge=1, le=10, description="How many chat completion choices to generate for each prompt.")
 
-    stream: Optional[bool] = Field(
-        None,
+    stream: bool = Field(
+        False,
         description="If set to true, the model response data will be streamed to the client as it is generated using server-sent events.",
     )
 
     title: Optional[str] = Field(None, description="The title of the chat completion")
-    object_field: Optional[str] = Field(None, alias="object_field", description="The object field of the chat completion")
-    is_archived: Optional[bool] = Field(None, description="Whether the chat completion is archived")
-    is_starred: Optional[bool] = Field(None, description="Whether the chat completion is starred")
+    object_field: str = Field("chat.completion", alias="object_field", description="The object field of the chat completion")
+    is_archived: bool = Field(False, description="Whether the chat completion is archived")
+    is_starred: bool = Field(False, description="Whether the chat completion is starred")
 
     # audit fields
-    created_by: Optional[str] = Field(None, description="The user who created the chat completion")
+    created_by: str = Field(..., description="The user who created the chat completion")
     created_date: datetime = Field(
         default_factory=datetime.now,
         description="The date and time the chat completion was created",
     )
-    last_updated_by: Optional[str] = Field(None, description="The user who last updated the chat completion")
-    last_updated_date: Optional[datetime] = Field(
+    last_updated_by: str = Field(..., description="The user who last updated the chat completion")
+    last_updated_date: datetime = Field(
         default_factory=datetime.now,
         description="The date and time the chat completion was last updated",
     )
 
 
-    class Config:
+    class Config():
         populate_by_name = True
         arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: lambda o: str(o),
+            datetime: lambda o: o.isoformat()
+        }
 
     def __str__(self):
         return f"""
