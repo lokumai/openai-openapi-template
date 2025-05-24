@@ -27,7 +27,7 @@ class PersistentMongoClient(DatabaseClient):
     @property
     def db(self):
         logger.info("Getting PersistentMongoClient.db")
-        if not self._db:
+        if self._db is None:
             logger.info("Generating PersistentMongoClient.db")
             self._db = self.client[db_config.DATABASE_NAME]
         logger.info(f"Returning PersistentMongoClient.db. Host: {self._db.host}")
