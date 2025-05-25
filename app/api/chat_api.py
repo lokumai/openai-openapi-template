@@ -1,6 +1,6 @@
 # chat api
 
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
 from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse, PlotResponse
@@ -96,14 +96,14 @@ async def list_messages(completion_id: str, request: Request, username: str = De
 # plot api list
 ################
 # get a plot for a message
-@router.get("/chat/completions/{completion_id}/messages/{message_id}/plot", response_model=PlotResponse)
+@router.get("/chat/completions/{completion_id}/messages/{message_id}/plot", response_model=Optional[PlotResponse], response_model_exclude_none=True)
 async def retrieve_plot(completion_id: str, message_id: str, request: Request, username: str = Depends(auth_service.verify_credentials)):
     """
     Get a plot figure for a message to visualize the data
     Summary: Click on a message on the right side to load the plot on the right side.
     """
     try:
-        return await service.find_plot(completion_id, message_id)
+        return await service.find_plot_by_message(completion_id, message_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -191,3 +191,28 @@ class ChatRepository:
 
         logger.info(f"No messages found for completion_id {completion_id} or messages field is empty/missing.")
         return []
+    
+    async def find_plot_by_message(self, completion_id: str, message_id: str) -> dict:
+        """
+        Find a plot by a given message id.
+        Example : completion_id = "123", message_id = "123"
+        """
+        logger.debug(f"BEGIN REPO: find plot by message id. input parameters: completion_id: {completion_id}, message_id: {message_id}")
+        query = {"completion_id": completion_id, "messages": {"$elemMatch": {"message_id": message_id}}}
+        projection = { "_id": 0}
+        try:
+            logger.debug(f"REPO find_plot_by_message. query: {query}, projection: {projection}")
+            entity_doc = await self.db.chat_completion.find_one(query, projection)
+            logger.debug("REPO find_plot_by_message. entity_doc")
+        except Exception as e:
+            logger.error(f"Error finding plot by message id: {e}")
+            return None
+        
+        # if messages is not empty and messages is not None, convert to ChatMessage
+        if entity_doc and entity_doc["messages"]:
+            entity = ChatMessage(**entity_doc["messages"][0])
+        logger.debug(f"REPO find_plot_by_message. entity: {entity}")
+        if entity.figure:
+            return entity.figure
+        else:
+            return None

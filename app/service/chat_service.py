@@ -1,7 +1,7 @@
 import datetime
-from typing import List
+from typing import List, Optional
 from app.repository.chat_repository import ChatRepository
-from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse 
+from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse, PlotResponse
 from app.mapper.chat_mapper import ChatMapper
 from app.mapper.conversation_mapper import ConversationMapper
 import uuid
@@ -49,8 +49,11 @@ class ChatService:
     async def find_messages(self, completion_id: str) -> List[MessageResponse]:
         logger.debug(f"BEGIN SERVICE: find_messages for completion_id: {completion_id}")
         messages = await self.chat_repository.find_messages(completion_id)
-        logger.debug(f"END SERVICE: find_messages for completion_id: {completion_id}, messages: {messages}")
-        messages_response = [MessageResponse(message_id=message.message_id, role=message.role, content=message.content, created_date=message.created_date) for message in messages]
+        logger.debug(f"END SERVICE: find_messages for completion_id: {completion_id}, messages: {len(messages)}")
+        messages_response = [
+            MessageResponse(message_id=message.message_id, role=message.role, content=message.content, created_date=message.created_date)
+            for message in messages
+        ]
         return messages_response
 
     # conversation service
@@ -76,3 +79,16 @@ class ChatService:
             return result
         else:
             return None
+
+    async def find_plot_by_message(self, completion_id: str, message_id: str) -> Optional[PlotResponse]:
+        logger.debug(f"BEGIN SERVICE: find_plot_by_message for completion_id: {completion_id}, message_id: {message_id}")
+        figure = await self.chat_repository.find_plot_by_message(completion_id, message_id)
+
+        if figure:
+            result = PlotResponse(plot_id=message_id, completion_id=completion_id, message_id=message_id, figure=figure)
+        else:
+            result = None
+            logger.warning(f"END SERVICE: no figure found for completion_id: {completion_id}, message_id: {message_id}")
+
+        logger.debug(f"END SERVICE: find_plot_by_message for completion_id: {completion_id}, message_id: {message_id} with figure")
+        return result
