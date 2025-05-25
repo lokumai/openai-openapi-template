@@ -1,5 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
+from datetime import datetime
 
 
 class MessageRequest(BaseModel):
@@ -34,6 +35,7 @@ class MessageResponse(BaseModel):
     role: Optional[str] = Field(None, description="The role of the message", examples=["user", "assistant", "system"])
     content: Optional[str] = Field(None, description="The content of the message")
     figure: Optional[dict] = Field(None, description="The figure data to be visualized")
+    created_date: Optional[datetime] = Field(None, description="The date and time the message was created")
 
 
 class ChoiceResponse(BaseModel):

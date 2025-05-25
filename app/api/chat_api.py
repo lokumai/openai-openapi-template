@@ -3,16 +3,8 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
-from app.schema.chat_schema import (
-    ChatCompletionRequest,
-    ChatCompletionResponse,
-    MessageResponse,
-    PlotResponse,
-)
-from app.schema.conversation_schema import (
-    ConversationResponse,
-    ConversationItemResponse,
-)
+from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse, PlotResponse
+from app.schema.conversation_schema import ConversationResponse, ConversationItemResponse
 from app.service.chat_service import ChatService
 from app.security.auth_service import AuthService
 from app.core.api_response import api_response
@@ -40,9 +32,7 @@ async def get_version():
 @router.post("/chat/completions", response_model=ChatCompletionResponse)
 @api_response()
 async def create_chat_completion(
-    chat_completion: ChatCompletionRequest,
-    request: Request,
-    username: str = Depends(auth_service.verify_credentials),
+    chat_completion: ChatCompletionRequest, request: Request, username: str = Depends(auth_service.verify_credentials)
 ):
     """
     Chat completion API - Given a list of messages comprising a conversation, the model will return a response.
@@ -58,10 +48,7 @@ async def create_chat_completion(
 
 # get all chat completions
 @router.get("/chat/completions", response_model=List[ChatCompletionResponse], deprecated=True)
-async def list_chat_completions(
-    request: Request,
-    username: str = Depends(auth_service.verify_credentials),
-):
+async def list_chat_completions(request: Request, username: str = Depends(auth_service.verify_credentials)):
     """
     Get all chat completions
     Summary: First load the chat interface(UI) for list of chat completions on the left side.
@@ -81,12 +68,7 @@ async def list_chat_completions(
 
 # get a chat completion by id
 @router.get("/chat/completions/{completion_id}", response_model=ChatCompletionResponse)
-@api_response()
-async def retrieve_chat_completion(
-    completion_id: str,
-    request: Request,
-    username: str = Depends(auth_service.verify_credentials),
-):
+async def retrieve_chat_completion(completion_id: str, request: Request, username: str = Depends(auth_service.verify_credentials)):
     """
     Get a chat completion by id
     Summary: Click on a chat completion on the left side to load the chat completion on the right side.
@@ -99,12 +81,7 @@ async def retrieve_chat_completion(
 
 # get all messages for a chat completion
 @router.get("/chat/completions/{completion_id}/messages", response_model=List[MessageResponse], deprecated=True)
-@api_response()
-async def list_messages(
-    completion_id: str,
-    request: Request,
-    username: str = Depends(auth_service.verify_credentials),
-):
+async def list_messages(completion_id: str, request: Request, username: str = Depends(auth_service.verify_credentials)):
     """
     Get all messages for a chat completion
     Summary: Click on a chat completion on the left side to load the chat completion on the right side.
@@ -120,13 +97,7 @@ async def list_messages(
 ################
 # get a plot for a message
 @router.get("/chat/completions/{completion_id}/messages/{message_id}/plot", response_model=PlotResponse)
-@api_response()
-async def retrieve_plot(
-    completion_id: str,
-    message_id: str,
-    request: Request,
-    username: str = Depends(auth_service.verify_credentials),
-):
+async def retrieve_plot(completion_id: str, message_id: str, request: Request, username: str = Depends(auth_service.verify_credentials)):
     """
     Get a plot figure for a message to visualize the data
     Summary: Click on a message on the right side to load the plot on the right side.

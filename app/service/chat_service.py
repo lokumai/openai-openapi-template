@@ -1,8 +1,7 @@
 import datetime
 from typing import List
 from app.repository.chat_repository import ChatRepository
-from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse
-from app.model.chat_model import ChatMessage
+from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse 
 from app.mapper.chat_mapper import ChatMapper
 from app.mapper.conversation_mapper import ConversationMapper
 import uuid
@@ -47,8 +46,12 @@ class ChatService:
         entity = await self.chat_repository.find_by_id(completion_id, project)
         return self.chat_mapper.to_schema(entity) if entity else None
 
-    async def find_messages(self, completion_id: str) -> List[ChatMessage]:
-        return await self.chat_repository.find_messages(completion_id)
+    async def find_messages(self, completion_id: str) -> List[MessageResponse]:
+        logger.debug(f"BEGIN SERVICE: find_messages for completion_id: {completion_id}")
+        messages = await self.chat_repository.find_messages(completion_id)
+        logger.debug(f"END SERVICE: find_messages for completion_id: {completion_id}, messages: {messages}")
+        messages_response = [MessageResponse(message_id=message.message_id, role=message.role, content=message.content, created_date=message.created_date) for message in messages]
+        return messages_response
 
     # conversation service
     async def find_all_conversations(self, username: str) -> List[ConversationResponse]:

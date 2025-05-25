@@ -179,7 +179,7 @@ class ChatRepository:
         logger.debug(f"BEGIN REPO: find messages for chat completion id. input parameters: completion_id: {completion_id}")
         projection = {"messages": 1, "_id": 0}
         chat_doc = await self.db.chat_completion.find_one({"completion_id": completion_id}, projection)
-
+        logger.trace(f"REPO find_messages. chat_doc: {chat_doc}")
         if chat_doc and "messages" in chat_doc and chat_doc["messages"]:
             try:
                 messages_list = [ChatMessage(**item) for item in chat_doc["messages"]]
