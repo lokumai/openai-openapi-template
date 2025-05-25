@@ -41,7 +41,7 @@ async def create_chat_completion(
     Summary: question -> Send button from chat interface(UI)
     """
     try:
-        return await service.handle_chat_completion(chat_completion)
+        return await service.handle_chat_completion(chat_completion, username)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

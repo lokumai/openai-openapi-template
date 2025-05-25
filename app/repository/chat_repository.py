@@ -36,10 +36,9 @@ class ChatRepository:
         """
         logger.info(f"Creating new chat completion for user: {entity.created_by}")
 
-        entity.completion_id = str(uuid.uuid4()) if entity.completion_id is None else entity.completion_id
+        # entity.completion_id = str(uuid.uuid4()) if entity.completion_id is None else entity.completion_id
         entity_dict = entity.model_dump(by_alias=True)
 
-        # MongoDB'ye kaydet
         insert_result = await self.db.chat_completion.insert_one(entity_dict)
 
         if not insert_result.inserted_id:

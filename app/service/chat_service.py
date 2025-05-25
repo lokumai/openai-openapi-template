@@ -15,28 +15,6 @@ class ChatService:
         self.chat_mapper = ChatMapper()
         self.conversation_mapper = ConversationMapper()
 
-    async def handle_chat_completion(self, request: ChatCompletionRequest) -> ChatCompletionResponse:
-        last_user_message = request.messages[-1].content
-        logger.debug(f"TODO implement ai-agent response for this message: {last_user_message}")
-        username = "admin"
-
-        # Convert request to model
-        entity = self.chat_mapper.to_model(request)
-
-        if entity.completion_id:
-            entity.completion_id = str(uuid.uuid4())
-            entity.created_by = username
-            entity.created_date = datetime.datetime.now()
-
-        entity.last_updated_by = username
-        entity.last_updated_date = datetime.datetime.now()
-
-        # Save to database
-        entity = await self.chat_repository.save(entity)
-
-        # Convert model to response
-        return self.chat_mapper.to_schema(entity)
-
     async def find(self, query: dict, page: int, limit: int, sort: dict, project: dict = None) -> List[ChatCompletionResponse]:
         logger.debug(f"BEGIN SERVICE: find for query: {query}, page: {page}, limit: {limit}, sort: {sort}, project: {project}")
         entities = await self.chat_repository.find(query, page, limit, sort, project)
@@ -98,3 +76,27 @@ class ChatService:
 
         logger.debug(f"END SERVICE: find_plot_by_message for completion_id: {completion_id}, message_id: {message_id} with figure")
         return result
+
+
+
+
+    async def handle_chat_completion(self, request: ChatCompletionRequest, username: str) -> ChatCompletionResponse:
+        last_user_message = request.messages[-1].content
+        logger.debug(f"TODO implement ai-agent response for this message: {last_user_message}")
+
+        # Convert request to model
+        entity = self.chat_mapper.to_model(request)
+
+        if entity.completion_id:
+            entity.completion_id = str(uuid.uuid4())
+            entity.created_by = username
+            entity.created_date = datetime.datetime.now()
+
+        entity.last_updated_by = username
+        entity.last_updated_date = datetime.datetime.now()
+
+        # Save to database
+        entity = await self.chat_repository.save(entity)
+
+        # Convert model to response
+        return self.chat_mapper.to_schema(entity)
