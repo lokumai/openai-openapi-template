@@ -46,7 +46,6 @@ class ChoiceResponse(BaseModel):
     )
     index: Optional[int] = Field(None, description="The index of the choice in the list of choices.")
     message: Optional[ChatMessageResponse] = Field(None, description="The message to use for the chat completion")
-    # logprobs: str = None # not implemented yet
 
 
 class ChatCompletionResponse(BaseModel):
@@ -60,7 +59,7 @@ class ChatCompletionResponse(BaseModel):
     model: Optional[str] = Field(None, description="The model used for the chat completion")
     # not implemented yet
     # service_tier: Optional[ServiceTier] = ServiceTier.AUTO
-    # system_fingerprint: Optional[StrictStr] = Field(default=None, description="This fingerprint represents the backend configuration that the model runs with.  Can be used in conjunction with the `seed` request parameter to understand when backend changes have been made that might impact determinism. ")
+    # system_fingerprint: Optional[StrictStr] = Field(default=None, description=This fingerprint represents the backend configuration that the model runs with.  Can be used in conjunction with the `seed` request parameter to understand when backend changes have been made that might impact determinism.)
     # object: StrictStr = Field(description="The object type, which is always `chat.completion`.")
     # usage: Optional[CompletionUsage] = None
 

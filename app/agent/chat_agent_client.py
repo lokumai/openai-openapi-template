@@ -9,6 +9,6 @@ class ChatAgentClient:
         # TODO implement the logic to process the chat
         agent_name = self.agent_name
         return AssistantChatAgentResponse(
-            message=f"Here is the {agent_name} Processed message: This is a placeholder response for the user-question",
+            message=f"Here is the {agent_name} Processed message: This is a placeholder response for the user-question typeOfTheRequest:{type(user_chat_agent_request)}",
             figure=None,  # Placeholder for any figure data if needed
         )

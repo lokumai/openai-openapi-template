@@ -1,18 +1,18 @@
 #!/bin/bash
 
-# Önce eski uygulamayı durdur
+# stop existing application if running
 echo "Stopping existing application..."
 pkill -f "uvicorn main:app"
 
-# 2 saniye bekle
+# wait for the process to stop
 sleep 2
 
-# FastAPI uygulamasını başlat (Gradio entegre edilmiş)
+# start FastAPI application with uvicorn integrated Gradio Application
 echo "Starting application..."
 uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload
 
-# Ctrl+C ile durdurma işlemini yakala
+# catch SIGINT (Ctrl+C) to stop the application gracefully
 trap "echo 'Stopping application...'; pkill -f 'uvicorn main:app'; exit" INT
 
-# Uygulamanın çalışmasını bekle
+# wait for the application to run
 wait

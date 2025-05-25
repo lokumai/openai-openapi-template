@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 env = environs.Env()
 env.read_env()
 
-# Hugging Face Spaces için özel yapılandırma
+# special handling for Hugging Face Space
 IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
 SPACE_URL = "https://lokumai-openai-openapi-template.hf.space" if IS_HF_SPACE else "http://localhost:7860"
 

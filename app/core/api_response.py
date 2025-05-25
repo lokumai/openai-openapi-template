@@ -1,5 +1,5 @@
 from functools import wraps
-import re
+from warnings import deprecated
 from fastapi import HTTPException, Request, status
 from loguru import logger
 import os
@@ -10,55 +10,18 @@ from environs import Env
 env = Env()
 env.read_env()
 
-USE_MOCK = env.bool("USE_MOCK", True)
+USE_MOCK = env.bool("USE_MOCK", False)
 MOCK_DIR = env.str("MOCK_DIR", "resources/mock")
 
 # Deprecated code. because we are using mongomock-motor for database_type=embedded
-# TODO: remove this code after we switch to real database
 
 
-def url_to_filename(url: str, method: str) -> str:
-    """
-    Convert API URL to mock filename.
-    Example:
-    - Input: GET "/v1/chat/completions" -> "chat_completions_GET.json"
-    - Input: GET "/v1/chat/completions/{completion_id}" -> "chat_completions_id_GET.json"
-    - Input: GET "/v1/chat/completions/123/messages" -> "chat_completions_id_messages_GET.json"
-    """
-    logger.trace(f"BEGIN: url: {url} method: {method}")
-    # Remove version prefix and leading/trailing slashes
-    path = url.strip("/")
-    if path.startswith("v1/"):
-        path = path[3:]
-
-    # Replace path parameters with descriptive names
-    path = path.replace("{completion_id}", "id")
-    path = path.replace("{message_id}", "id")
-
-    logger.trace(f"replaced path: {path}")
-
-    # Convert to filename format
-    filename = path.replace("/", "_")
-    logger.trace(f"filename: {filename}")
-
-    # convert conversations_1 to conversations with dynamic id
-    final_filename = re.sub(r"[_][^/]+$", "_id", filename)
-    logger.trace(f"final_filename: {final_filename}")
-
-    # Add method suffix
-    result = f"{final_filename}_{method}"
-    logger.trace(f"END: result: {result}")
-    return result
-
-
+@deprecated("This function is deprecated. Use database_type=embedded with mongomock-motor instead.")
 def get_mock_response(url_path: str, python_module_name: str, python_method_name: str) -> Dict:
     """Get mock response from JSON file."""
     logger.trace(f"BEGIN: url_path: {url_path} python_module_name: {python_module_name} python_method_name: {python_method_name}")
-    filename = None
     file_path = None
     try:
-        # Convert to filename
-        # filename = url_to_filename(url_path, method)
         filename = python_module_name + "_" + python_method_name
         filename = filename.replace(".", "_")
         filename = filename.replace("__", "_")
@@ -67,7 +30,7 @@ def get_mock_response(url_path: str, python_module_name: str, python_method_name
         filename = filename.replace(" ", "_")
         filename = filename.replace("-", "_")
         filename = filename.replace("app_api_", "")
-
+        logger.trace(f"FileName : {filename}")
         # Load mock response
         file_path = os.path.join(MOCK_DIR, f"{filename}.json")
 
@@ -89,7 +52,7 @@ def get_mock_response(url_path: str, python_module_name: str, python_method_name
 
 
 def api_response():
-    """Decorator to handle mock/real API responses."""
+    """Decorator to handle API request and response"""
 
     def decorator(func):
         logger.trace(f"BEGIN: decorator: {func}")

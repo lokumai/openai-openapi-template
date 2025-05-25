@@ -124,12 +124,12 @@ class ChatService:
             else:
                 logger.info("Update existing chat completion with new user request message")
 
-                logger.debug(f"before update. current db entity messsage count: {len(current_db_entity.messages)}")
+                logger.trace(f"before update. current db entity messages count: {len(current_db_entity.messages)}")
                 current_db_entity.messages.append(last_user_message_model)
-                logger.debug(f"after update. current db entity messsage count: {len(current_db_entity.messages)}")
+                logger.trace(f"after update. current db entity messages count: {len(current_db_entity.messages)}")
                 current_db_entity.last_updated_date = datetime.datetime.now()
                 final_entity = await self.chat_repository.update(current_db_entity)
-                logger.debug(f"after update. final entity messsage count: {len(final_entity.messages)}")
+                logger.trace(f"after update. final entity messages count: {len(final_entity.messages)}")
 
             # Convert model to response
             result = self.chat_mapper.to_schema(final_entity, convert_last_message=True)

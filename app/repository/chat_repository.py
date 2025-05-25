@@ -163,7 +163,7 @@ class ChatRepository:
                 return final_entity
             except Exception as e:
                 logger.error(f"Error parsing ChatCompletion from DB for id {completion_id}: {e}", exc_info=True)
-                return None  # Parse hatası durumunda None döndür
+                return None
         else:
             logger.info(f"Chat completion with ID {completion_id} not found in DB.")
             return None

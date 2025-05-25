@@ -12,7 +12,7 @@ api_key_header = APIKeyHeader(
     name="Authorization",
     scheme_name="ApiKeyAuth",
     description="API key in the format: sk-{username}-{base64_encoded_data}",
-    auto_error=False,  # API key olmadığında otomatik hata vermesini engelle
+    auto_error=False,
 )
 
 
@@ -51,8 +51,6 @@ class AuthService:
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail=f"Invalid API key data format: {str(e)}",
                 )
-
-            # Debug için JSON verilerini logla
             json_data = {
                 "username": data["username"],
                 "created_at": data["created_at"],

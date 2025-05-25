@@ -24,7 +24,7 @@ from loguru import logger
 logger.add("logs/api_key_generator.log")
 
 
-def generate_api_key(username: str, secret_key: str) -> str:
+def generate_api_key(username: str, secret_key: str) -> tuple[str, int]:
     """
     Generates an API key for the given username using a secret key.
 
@@ -39,7 +39,6 @@ def generate_api_key(username: str, secret_key: str) -> str:
     timestamp = int(datetime.now().timestamp())
     data = {"username": username, "created_at": timestamp}
 
-    # Debug için JSON verilerini logla
     json_data = {"username": username, "created_at": timestamp}
     json_str = json.dumps(json_data)
     logger.debug(f"JSON data for signature: {json_str}")

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from app.mapper.base_mapper import BaseMapper
 from app.model.chat_model import ChatCompletion, ChatMessageModel
 from app.schema.chat_schema import ChatCompletionResponse, ChatCompletionRequest, ChatMessageResponse, ChoiceResponse
