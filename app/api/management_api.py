@@ -39,8 +39,8 @@ def _load_version():
                 __version__ = config["project"]["version"]
                 logger.info(f"API Version: {__version__}")
                 return __version__
-    
-    __version__ = "unknown"        
+
+    __version__ = "unknown"
     logger.warning(f"App Version is not found in pyproject.toml path: {pyproject_path}")
     return __version__
 
