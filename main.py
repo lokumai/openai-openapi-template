@@ -1,29 +1,13 @@
-import json
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import chat_api, conversation_api, management_api
-from app.config.log import log_config
 from loguru import logger
-from environs import Env
 from contextlib import asynccontextmanager
 from app.db.factory import db_client
 from gradio_chatbot import build_gradio_app, app_auth
 import gradio as gr
-import os
 from app.core.initial_setup.setup import InitialSetup
-
-print(log_config.get_log_level())
-
-env = Env()
-env.read_env()
-
-DB_DATABASE_TYPE = env.str("DB_DATABASE_TYPE", "mongodb")
-
-# special handling for Hugging Face Space
-IS_HF_SPACE = os.environ.get("SPACE_ID") is not None
-SPACE_URL = "https://lokumai-openai-openapi-template.hf.space" if IS_HF_SPACE else "http://localhost:7860"
 
 
 @asynccontextmanager
@@ -115,6 +99,7 @@ app.add_middleware(
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
+
 app.include_router(chat_api.router)
 app.include_router(management_api.router)
 app.include_router(conversation_api.router)
@@ -122,20 +107,6 @@ app.include_router(conversation_api.router)
 # Build and mount Gradio app
 demo = build_gradio_app()
 app = gr.mount_gradio_app(app, demo, path="/ui", auth=app_auth)
-
-
-@app.get("/")
-async def root():
-    """Redirect root to Gradio UI"""
-    return RedirectResponse(url="/ui")
-
-
-@app.get("/manifest.json")
-async def get_manifest():
-    """Return the web app manifest"""
-    manifest_path = os.path.join(os.path.dirname(__file__), "static", "manifest.json")
-    with open(manifest_path, "r") as f:
-        return JSONResponse(json.load(f))
 
 
 # uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload

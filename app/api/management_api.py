@@ -1,14 +1,21 @@
 from fastapi import APIRouter
+from fastapi.responses import RedirectResponse, JSONResponse
 from pathlib import Path
 from pydantic import BaseModel
 import toml
 from loguru import logger
+from environs import Env
+import json
 
 
-router = APIRouter(prefix="/v1", tags=["management"])
+env = Env()
+env.read_env()
+REDIRECT_TO_GRADIO_UI = env.bool("REDIRECT_TO_GRADIO_UI", True)
+
+router = APIRouter(tags=["management"])
 
 
-#### Health Check ##############
+#### Health Check #################################################
 class HealthResponse(BaseModel):
     status: str = "ok"
 
@@ -21,7 +28,7 @@ async def health_check():
     return HealthResponse()
 
 
-#### Version ####################
+#### Version #######################################################
 __version__ = None
 
 
@@ -52,3 +59,30 @@ async def version_api():
     Version endpoint, returns the version of the system
     """
     return {"version": _load_version()}
+
+
+def _get_manifest() -> JSONResponse:
+    print("get manifest")
+    current_dir = Path(__file__).resolve().parent.parent.parent
+    manifest_path = current_dir / "static" / "manifest.json"
+    with open(manifest_path, "r") as f:
+        return JSONResponse(json.load(f))
+
+
+### root ##########################################################
+@router.get("/")
+async def root():
+    """
+    Redirect root to Gradio UI
+    """
+    if REDIRECT_TO_GRADIO_UI:
+        return RedirectResponse(url="/ui")
+    else:
+        return _get_manifest()
+
+
+### manifest #######################################################
+@router.get("/manifest.json")
+async def get_manifest():
+    """Return the web app manifest"""
+    return _get_manifest()
