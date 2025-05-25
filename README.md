@@ -93,16 +93,12 @@ curl -X POST "http://localhost:8000/v1/chat/completions" \
      -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello!"}]}'
 ```
 
-## Mock Implementation
-* `USE_MOCK` environment variable is set to `true`, the API will return mock responses for all endpoints. Default is `false`.
-* `MOCK_DIR` environment variable is used to specify the directory of the mock responses, default is `resources/mock`.
-* Mock file names should be same as the module and function name like below:
-     - app/api/chat_api.py - listChatCompletions - resources/mock/`chat_api_list_chat_completions.json` - mock response for GET `/v1/chat/completions`
-     - app/api/chat_api.py - createChatCompletion - resources/mock/`chat_api_create_chat_completion.json` - mock response for POST `/v1/chat/completions`
-     - app/api/chat_api.py - getChatCompletionMessages - resources/mock/`chat_api_list_messages.json` - mock response for GET `/v1/chat/completions/{completion_id}/messages`
-     - app/api/chat_api.py - getChatCompletion - resources/mock/`chat_api_retrieve_chat_completion.json` - mock response for GET `/v1/chat/completions/{completion_id}`
-     - app/api/chat_api.py - getChatPlotByMessage - resources/mock/`chat_api_retrieve_plot.json` - mock response for GET `/v1/chat/completions/{completion_id}/messages/{message_id}/plots`
+## Embedded MongoDB for local machine development
 
+* `database_type` environment variable is set to `embedded`, the API will use embedded MongoDB for local machine development. Default is `mongodb`.
+* `mongodb_host` environment variable is set to `localhost`, the API will use localhost for MongoDB. Default is `localhost`.
+* `mongodb_port` environment variable is set to `27017`, the API will use 27017 for MongoDB. Default is `27017`.
+* `mongodb_database` environment variable is set to `openai_openapi_template`, the API will use openai_openapi_template for MongoDB. Default is `openai_openapi_template`.
 
 
 ## Contributing

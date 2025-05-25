@@ -128,6 +128,10 @@ class ChatRepository:
         Example : query = {"created_by": "admin"}
         """
         logger.debug(f"BEGIN REPO: find chat completion. query: {query}, page: {page}, limit: {limit}, sort: {sort}, projection: {projection}")
+        if page < 1:
+            page = 1
+        if limit < 1:
+            limit = 10
         skip = (page - 1) * limit
         sort_query = sort if sort else [("created_date", pymongo.DESCENDING)]
 

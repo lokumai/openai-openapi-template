@@ -13,6 +13,8 @@ env.read_env()
 USE_MOCK = env.bool("USE_MOCK", True)
 MOCK_DIR = env.str("MOCK_DIR", "resources/mock")
 
+# Deprecated code. because we are using mongomock-motor for database_type=embedded
+# TODO: remove this code after we switch to real database
 
 def url_to_filename(url: str, method: str) -> str:
     """

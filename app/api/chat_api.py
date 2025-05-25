@@ -67,7 +67,7 @@ async def list_chat_completions(
     Summary: First load the chat interface(UI) for list of chat completions on the left side.
     """
     logger.debug(f"BEGIN API: list_chat_completions for username: {username}")
-    page: int = 0
+    page: int = 1
     limit: int = 10
     sort: dict = {"created_date": -1}
     project: dict = None
