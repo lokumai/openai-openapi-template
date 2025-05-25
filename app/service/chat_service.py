@@ -51,7 +51,13 @@ class ChatService:
         messages = await self.chat_repository.find_messages(completion_id)
         logger.debug(f"END SERVICE: find_messages for completion_id: {completion_id}, messages: {len(messages)}")
         messages_response = [
-            MessageResponse(message_id=message.message_id, role=message.role, content=message.content, created_date=message.created_date, figure=(message.figure))
+            MessageResponse(
+                message_id=message.message_id,
+                role=message.role,
+                content=message.content,
+                created_date=message.created_date,
+                figure=(message.figure),
+            )
             for message in messages
         ]
         return messages_response
@@ -85,7 +91,7 @@ class ChatService:
         figure = await self.chat_repository.find_plot_by_message(completion_id, message_id)
 
         if figure:
-            result = (figure)
+            result = figure
         else:
             result = None
             logger.warning(f"END SERVICE: no figure found for completion_id: {completion_id}, message_id: {message_id}")

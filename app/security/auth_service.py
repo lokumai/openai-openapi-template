@@ -1,5 +1,5 @@
 from app.config.security_config import get_security_config
-from fastapi import HTTPException, status, Security, Depends
+from fastapi import HTTPException, status, Security
 from fastapi.security import APIKeyHeader
 from loguru import logger
 import base64

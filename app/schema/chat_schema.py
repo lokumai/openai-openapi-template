@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 
@@ -25,8 +25,6 @@ class ChatCompletionRequest(BaseModel):
     messages: Optional[List[MessageRequest]] = Field(None, description="The messages to use for the chat completion")
     stream: Optional[bool] = Field(None, description="Whether to stream the chat completion")
 
-
- 
 
 class MessageResponse(BaseModel):
     """

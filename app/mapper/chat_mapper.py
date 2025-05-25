@@ -1,5 +1,3 @@
-from datetime import datetime
-from typing import Optional
 from app.mapper.base_mapper import BaseMapper
 from app.model.chat_model import ChatCompletion, ChatMessage
 from app.schema.chat_schema import ChatCompletionResponse, ChatCompletionRequest, MessageResponse, ChoiceResponse

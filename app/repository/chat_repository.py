@@ -181,14 +181,16 @@ class ChatRepository:
         logger.trace(f"REPO find_messages. chat_doc: {chat_doc}")
         if chat_doc and "messages" in chat_doc and chat_doc["messages"]:
             try:
-                
-                messages_list = [ChatMessage(
-                    message_id=item["message_id"],
-                    role=item["role"],
-                    content=item["content"],
-                    figure=item["figure"] if item["figure"] else None,
-                    created_date=item["created_date"]
-                ) for item in chat_doc["messages"]]
+                messages_list = [
+                    ChatMessage(
+                        message_id=item["message_id"],
+                        role=item["role"],
+                        content=item["content"],
+                        figure=item["figure"] if item["figure"] else None,
+                        created_date=item["created_date"],
+                    )
+                    for item in chat_doc["messages"]
+                ]
                 logger.debug(f"END REPO: find_messages. Found {len(messages_list)} messages.")
                 return messages_list
             except Exception as e:
@@ -197,14 +199,14 @@ class ChatRepository:
 
         logger.info(f"No messages found for completion_id {completion_id} or messages field is empty/missing.")
         return []
-    
+
     async def find_plot_by_message(self, completion_id: str, message_id: str) -> Optional[dict[str, Any]]:
         """
         Find a plot by a given message id.
         Example : completion_id = "123", message_id = "123"
         """
         logger.debug(f"BEGIN REPO: find plot by message id. input parameters: completion_id: {completion_id}, message_id: {message_id}")
-        
+
         query = {"completion_id": completion_id}
         projection = {"messages": 1, "_id": 0}
         try:
@@ -213,7 +215,7 @@ class ChatRepository:
         except Exception as e:
             logger.error(f"Error finding plot by message id: {e}")
             return None
-        
+
         # Mesajları Python tarafında filtreleyelim
         if entity_doc and "messages" in entity_doc and entity_doc["messages"]:
             try:
@@ -223,7 +225,7 @@ class ChatRepository:
                 #         figure = message.get("figure")
                 #         logger.debug(f"REPO find figure: {figure}")
                 #         return figure
-                
+
                 match = next((message for message in entity_doc["messages"] if message["message_id"] == message_id), None)
                 if match:
                     figure = match.get("figure")
@@ -231,7 +233,7 @@ class ChatRepository:
                     return figure
                 else:
                     logger.warning(f"Message with ID {message_id} not found")
-                
+
                 logger.warning(f"Message with ID {message_id} not found")
                 return None
             except Exception as e:

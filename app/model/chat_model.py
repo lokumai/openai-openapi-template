@@ -1,10 +1,9 @@
 # chat model for chat completion database
 
-import json
 from bson import ObjectId
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Any
 
 # Chat completion payload example
 # {
@@ -50,8 +49,6 @@ from typing import List, Optional, Dict, Any
 #   "presence_penalty": 0.1
 #   "stream": false
 # }
-
- 
 
 
 class ChatMessage(BaseModel):
