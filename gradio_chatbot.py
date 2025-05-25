@@ -2,7 +2,7 @@ import json
 import gradio as gr
 import environs
 import httpx
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
 import os
@@ -125,7 +125,7 @@ class MessageStatus(Enum):
 
 
 @dataclass
-class MessageResponse:
+class ChatMessageResponse:
     """Data class for message response"""
 
     status: MessageStatus
@@ -142,7 +142,7 @@ class ChatAPI:
         self.api_key = api_key
         self.endpoint = f"{base_url}/v1/chat/completions"
 
-    async def send_message(self, prompt: str) -> MessageResponse:
+    async def send_message(self, prompt: str) -> ChatMessageResponse:
         """
         Send a message to the chat API
 
@@ -150,7 +150,7 @@ class ChatAPI:
             prompt (str): The message to send
 
         Returns:
-            MessageResponse: The response from the API
+            ChatMessageResponse: The response from the API
         """
         logger.trace(f"Calling chat API with prompt: {prompt}")
         try:
@@ -169,7 +169,7 @@ class ChatAPI:
 
                 if response.status_code != 200:
                     logger.error(f"API Error: {response.text}")
-                    return MessageResponse(
+                    return ChatMessageResponse(
                         status=MessageStatus.ERROR,
                         content="",
                         figure=None,
@@ -187,14 +187,14 @@ class ChatAPI:
                     logger.trace(f"Figure: {figure}")
                     content = message.get("content", "Content not found")
                     logger.trace(f"Last message: {content}")
-                    return MessageResponse(
+                    return ChatMessageResponse(
                         status=MessageStatus.SUCCESS,
                         content=content,
                         figure=figure,
                     )
                 else:
                     logger.error("Invalid API response")
-                    return MessageResponse(
+                    return ChatMessageResponse(
                         status=MessageStatus.ERROR,
                         content="",
                         error="Invalid API response",
@@ -202,14 +202,14 @@ class ChatAPI:
 
         except httpx.TimeoutException:
             logger.error("API request timed out")
-            return MessageResponse(
+            return ChatMessageResponse(
                 status=MessageStatus.ERROR,
                 content="",
                 error="Request timed out. Please try again.",
             )
         except Exception as e:
             logger.error(f"Error: {str(e)}")
-            return MessageResponse(
+            return ChatMessageResponse(
                 status=MessageStatus.ERROR,
                 content="",
                 error=f"Error: {str(e)}",
@@ -319,13 +319,13 @@ class ChatInterface:
                         None,
                     )
 
-            def clear_history() -> Tuple[List[List[str]], str, str, str, dict]:
+            def clear_history() -> tuple[list[Any], str, str, str, None]:
                 """Clear chat history"""
                 return [], "", "Chat cleared.", "", None
 
             def retry_last_message(
                 history: List[List[str]],
-            ) -> Tuple[List[List[str]], str, str, str, dict]:
+            ) -> tuple[list[list[str]], str, str, str, None]:
                 """Retry the last message"""
                 if not history:
                     return history, "", "No message to retry.", "", None

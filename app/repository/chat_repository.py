@@ -1,8 +1,7 @@
 from typing import Any, List, Optional
 from app.db.factory import db_client
-from app.model.chat_model import ChatMessage, ChatCompletion
+from app.model.chat_model import ChatMessageModel, ChatCompletion
 from loguru import logger
-import uuid
 import pymongo
 
 
@@ -21,7 +20,7 @@ class ChatRepository:
         self.db = db_client.db
         self.collection = "chat_completion"
 
-    async def _create(self, entity: ChatCompletion) -> ChatCompletion:
+    async def create(self, entity: ChatCompletion) -> ChatCompletion:
         """
         Create a new chat completion in the database.
 
@@ -48,7 +47,7 @@ class ChatRepository:
         logger.info(f"Successfully created new chat completion with ID: {entity.completion_id}")
         return await self.find_by_id(entity.completion_id)
 
-    async def _update(self, entity: ChatCompletion) -> ChatCompletion:
+    async def update(self, entity: ChatCompletion) -> ChatCompletion:
         """
         Update an existing chat completion in the database.
 
@@ -108,9 +107,9 @@ class ChatRepository:
         try:
             result = await self.find_by_id(entity.completion_id)
             if result:
-                return await self._update(entity)
+                return await self.update(entity)
             else:
-                return await self._create(entity)
+                return await self.create(entity)
         except Exception as e:
             logger.error(f"Error saving chat completion: {e}")
             raise
@@ -118,7 +117,7 @@ class ChatRepository:
             logger.debug("END REPO: save chat completion")
 
     async def find(
-        self, query: dict = {}, page: int = 1, limit: int = 10, sort: dict = {"created_date": -1}, projection: dict = None
+        self, query: dict = {}, page: int = 1, limit: int = 10, sort: dict = {"created_date": -1}, projection: dict = {}
     ) -> List[ChatCompletion]:
         """
         Find a chat completion by a given query. with pagination
@@ -147,7 +146,7 @@ class ChatRepository:
         logger.debug(f"END REPO: find, returning {len(result_models)} models.")
         return result_models
 
-    async def find_by_id(self, completion_id: str, projection: dict = None) -> ChatCompletion:
+    async def find_by_id(self, completion_id: str, projection: dict = None) -> ChatCompletion | None:
         """
         Find a chat completion by a given id.
         Example : completion_id = "123"
@@ -169,7 +168,7 @@ class ChatRepository:
             logger.info(f"Chat completion with ID {completion_id} not found in DB.")
             return None
 
-    async def find_messages(self, completion_id: str) -> List[ChatMessage]:
+    async def find_messages(self, completion_id: str) -> List[ChatMessageModel]:
         """
         Find all messages for a given chat completion id.
         Example : completion_id = "123"
@@ -181,7 +180,7 @@ class ChatRepository:
         if chat_doc and "messages" in chat_doc and chat_doc["messages"]:
             try:
                 messages_list = [
-                    ChatMessage(
+                    ChatMessageModel(
                         message_id=item["message_id"],
                         role=item["role"],
                         content=item["content"],
@@ -215,16 +214,8 @@ class ChatRepository:
             logger.error(f"Error finding plot by message id: {e}")
             return None
 
-        # Mesajları Python tarafında filtreleyelim
         if entity_doc and "messages" in entity_doc and entity_doc["messages"]:
             try:
-                # İstenen message_id'ye sahip mesajı bul
-                # for message in entity_doc["messages"]:
-                #     if message["message_id"] == message_id:
-                #         figure = message.get("figure")
-                #         logger.debug(f"REPO find figure: {figure}")
-                #         return figure
-
                 match = next((message for message in entity_doc["messages"] if message["message_id"] == message_id), None)
                 if match:
                     figure = match.get("figure")

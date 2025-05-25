@@ -51,13 +51,13 @@ from typing import List, Optional, Any
 # }
 
 
-class ChatMessage(BaseModel):
+class ChatMessageModel(BaseModel):
     """
     A message in a chat completion.
     """
 
-    message_id: str = Field(..., description="The unique identifier for the message")
-    role: Optional[str] = Field(None, description="The role of the message sender", examples=["user", "assistant", "system"])
+    message_id: Optional[str] = Field(None, description="The unique identifier for the message")
+    role: str = Field(..., description="The role of the message sender", examples=["user", "assistant", "system"])
     content: str = Field(..., description="The content of the message")
     figure: Optional[dict[str, Any]] = Field(None, description="The figure data for visualization")
     created_date: datetime = Field(default_factory=datetime.now, description="The timestamp of the message")
@@ -89,7 +89,7 @@ class ChatCompletion(BaseModel):
 
     # openai compatible fields
     model: Optional[str] = Field(None, description="The model used for the chat completion", examples=["gpt-4o-mini", "gpt-4o", "gpt-3.5-turbo"])
-    messages: Optional[List[ChatMessage]] = Field(None, description="The messages in the chat completion")
+    messages: Optional[List[ChatMessageModel]] = Field(None, description="The messages in the chat completion")
 
     # not implemented yet
     # temperature: float = Field(default=0.7,ge=0.0, le=1.0, description="What sampling temperature to use, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.")

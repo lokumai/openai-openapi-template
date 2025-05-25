@@ -3,7 +3,7 @@
 from typing import Any, List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Request
 from pydantic import BaseModel
-from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse
+from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, ChatMessageResponse
 from app.schema.conversation_schema import ConversationResponse, ConversationItemResponse
 from app.service.chat_service import ChatService
 from app.security.auth_service import AuthService
@@ -57,7 +57,7 @@ async def list_chat_completions(request: Request, username: str = Depends(auth_s
     page: int = 1
     limit: int = 10
     sort: dict = {"created_date": -1}
-    project: dict = None
+    project: dict = {}
 
     try:
         query = {"created_by": username}
@@ -80,7 +80,7 @@ async def retrieve_chat_completion(completion_id: str, request: Request, usernam
 
 
 # get all messages for a chat completion
-@router.get("/chat/completions/{completion_id}/messages", response_model=List[MessageResponse], deprecated=True)
+@router.get("/chat/completions/{completion_id}/messages", response_model=List[ChatMessageResponse], deprecated=True)
 async def list_messages(completion_id: str, request: Request, username: str = Depends(auth_service.verify_credentials)):
     """
     Get all messages for a chat completion
