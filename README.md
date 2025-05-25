@@ -182,7 +182,7 @@ gh pr create --base main --head feature/new-feature --title "Add new feature" --
  - [X] Implement API-Key Authentication and validation in all endpoints
 
  Production Implementation:
- - [ ] POST chat/completions - create a new chat completion
+ - [X] POST chat/completions - create a new chat completion
  - [X] GET  chat/completions - list stored chat completions
  - [X] GET  chat/completions/{completion_id} - get a stored chat completion by id
  - [X] GET  chat/completions/{completion_id}/messages - get the messages in a stored chat completion by id
