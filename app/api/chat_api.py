@@ -9,7 +9,7 @@ from app.schema.chat_schema import (
     MessageResponse,
     PlotResponse,
 )
-from app.schema.conversation import (
+from app.schema.conversation_schema import (
     ConversationResponse,
     ConversationItemResponse,
 )
@@ -57,7 +57,7 @@ async def create_chat_completion(
 
 
 # get all chat completions
-@router.get("/chat/completions", response_model=List[ChatCompletionResponse])
+@router.get("/chat/completions", response_model=List[ChatCompletionResponse], deprecated=True)
 async def list_chat_completions(
     request: Request,
     username: str = Depends(auth_service.verify_credentials),
@@ -80,10 +80,7 @@ async def list_chat_completions(
 
 
 # get a chat completion by id
-@router.get(
-    "/chat/completions/{completion_id}",
-    response_model=ChatCompletionResponse,
-)
+@router.get("/chat/completions/{completion_id}", response_model=ChatCompletionResponse)
 @api_response()
 async def retrieve_chat_completion(
     completion_id: str,
@@ -101,10 +98,7 @@ async def retrieve_chat_completion(
 
 
 # get all messages for a chat completion
-@router.get(
-    "/chat/completions/{completion_id}/messages",
-    response_model=List[MessageResponse],
-)
+@router.get("/chat/completions/{completion_id}/messages", response_model=List[MessageResponse], deprecated=True)
 @api_response()
 async def list_messages(
     completion_id: str,
@@ -125,10 +119,7 @@ async def list_messages(
 # plot api list
 ################
 # get a plot for a message
-@router.get(
-    "/chat/completions/{completion_id}/messages/{message_id}/plot",
-    response_model=PlotResponse,
-)
+@router.get("/chat/completions/{completion_id}/messages/{message_id}/plot", response_model=PlotResponse)
 @api_response()
 async def retrieve_plot(
     completion_id: str,
@@ -154,8 +145,7 @@ async def retrieve_plot(
 
 
 # get all conversations
-@router.get("/conversations", response_model=ConversationResponse)
-@api_response()
+@router.get("/conversations", response_model=ConversationResponse, response_model_exclude_none=True) 
 async def list_conversations(
     request: Request,
     username: str = Depends(auth_service.verify_credentials),
@@ -165,8 +155,7 @@ async def list_conversations(
     """
     logger.debug(f"Listing conversations for username: {username}")
     try:
-        # return await service.find_all_conversations(username)
-        return {"items": [], "total": 0, "limit": 10, "offset": 0}
+        return await service.find_all_conversations(username) 
     except Exception as e:
         logger.error(f"Error in list_conversations: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -175,11 +164,7 @@ async def list_conversations(
 # get a conversation by id
 
 
-@router.get(
-    "/conversations/{completion_id}",
-    response_model=ConversationItemResponse,
-)
-@api_response()
+@router.get("/conversations/{completion_id}", response_model=ConversationItemResponse, response_model_exclude_none=True)
 async def retrieve_conversation(
     completion_id: str,
     request: Request,

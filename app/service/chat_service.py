@@ -9,19 +9,21 @@ from app.schema.chat_schema import (
 )
 from app.model.chat_model import ChatCompletion, ChatMessage
 from app.mapper.chat_mapper import ChatMapper
+from app.mapper.conversation_mapper import ConversationMapper
 import uuid
 from loguru import logger
-from app.schema.conversation import ConversationResponse
+from app.schema.conversation_schema import ConversationResponse
 
 
 class ChatService:
     def __init__(self):
         self.chat_repository = ChatRepository()
         self.chat_mapper = ChatMapper()
+        self.conversation_mapper = ConversationMapper()
 
     async def handle_chat_completion(self, request: ChatCompletionRequest) -> ChatCompletionResponse:
         last_user_message = request.messages[-1].content
-        response_content = f"TODO implement ai-agent response for this message: {last_user_message}"
+        logger.debug(f"TODO implement ai-agent response for this message: {last_user_message}")
         username = "admin"
 
         # Convert request to model
@@ -55,7 +57,18 @@ class ChatService:
 
     # conversation service
     async def find_all_conversations(self, username: str) -> List[ConversationResponse]:
-        raise NotImplementedError("Not implemented")
+        """Find all conversations for a given username."""
+        query = {"created_by": username}
+        sort = {"last_updated_date": -1}  # Sort by last updated date in descending order
+
+        entities = await self.chat_repository.find(query, page=1, limit=100, sort=sort)
+        result = self.conversation_mapper.to_schema_list(entities)
+        return ConversationResponse(items=result, total=len(result), limit=100, offset=0)
+
+
 
     async def find_conversation_by_id(self, completion_id: str) -> ConversationResponse:
-        raise NotImplementedError("Not implemented")
+        """Find a conversation by its completion ID."""
+        entity = await self.chat_repository.find_by_id(completion_id)
+        result = self.conversation_mapper.to_schema(entity) if entity else None
+        return ConversationResponse(items=[result], total=1, limit=1, offset=0)

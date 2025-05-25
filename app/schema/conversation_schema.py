@@ -37,7 +37,10 @@ class ConversationItemResponse(BaseModel):
         default=None,
         description="Indicates whether the conversation is excluded from memory or history, if set.",
     )
-    memory_scope: str = Field(description="Scope of the conversation's memory, e.g., 'global_enabled' for global memory access.")
+    memory_scope: Optional[str] = Field(
+        default=None,
+        description="Scope of the conversation's memory, e.g., 'global_enabled' for global memory access.",
+    )
     workspace_id: Optional[str] = Field(
         default=None,
         description="Identifier for the workspace the conversation belongs to, if applicable.",
@@ -46,8 +49,14 @@ class ConversationItemResponse(BaseModel):
         default=None,
         description="Status of any asynchronous operations related to the conversation, if applicable.",
     )
-    safe_urls: List[str] = Field(description="List of URLs deemed safe for the conversation context.")
-    blocked_urls: List[str] = Field(description="List of URLs blocked for the conversation context.")
+    safe_urls: Optional[List[str]] = Field(
+        default=None,
+        description="List of URLs deemed safe for the conversation context.",
+    )
+    blocked_urls: Optional[List[str]] = Field(
+        default=None,
+        description="List of URLs blocked for the conversation context.",
+    )
     conversation_origin: Optional[str] = Field(
         default=None,
         description="Origin or source of the conversation, if specified.",
