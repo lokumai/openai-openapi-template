@@ -104,11 +104,11 @@ class ChatService:
             last_user_message_model = chat_model.messages[-1]
             last_user_message_model.message_id = str(uuid.uuid4())
             last_user_message_model.created_date = datetime.datetime.now()
-            logger.debug(f"last_user_message_model: {last_user_message_model}")
+            logger.trace(f"last_user_message_model: {last_user_message_model}")
 
-            logger.debug(f"finding by id. entity: {chat_model.completion_id}")
+            logger.trace(f"finding by id. entity: {chat_model.completion_id}")
             current_db_entity = await self.chat_repository.find_by_id(chat_model.completion_id)
-            logger.debug(f"found by id. Current entity: {current_db_entity.completion_id if current_db_entity else 'None'}")
+            logger.trace(f"found by id. Current entity: {current_db_entity.completion_id if current_db_entity else 'None'}")
 
             # if chat completion is not found, create a new one
             if not current_db_entity:
