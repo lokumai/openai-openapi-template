@@ -2,9 +2,7 @@
 
 from typing import Any, List, Optional
 from fastapi import APIRouter, HTTPException, Depends, Request
-from pydantic import BaseModel
 from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, ChatMessageResponse
-from app.schema.conversation_schema import ConversationResponse, ConversationItemResponse
 from app.service.chat_service import ChatService
 from app.security.auth_service import AuthService
 from loguru import logger
@@ -12,16 +10,6 @@ from loguru import logger
 router = APIRouter(prefix="/v1", tags=["chat"])
 service = ChatService()
 auth_service = AuthService()
-
-
-class VersionResponse(BaseModel):
-    version: str = "0.0.1"
-
-
-# version api from pyproject.toml
-@router.get("/version", response_model=VersionResponse)
-async def get_version():
-    return VersionResponse()
 
 
 ################
@@ -99,7 +87,9 @@ async def list_messages(completion_id: str, request: Request, username: str = De
 ################
 # get a plot for a message
 @router.get(
-    "/chat/completions/{completion_id}/messages/{message_id}/plot", response_model=Optional[dict[str, Any]], response_model_exclude_none=True
+    "/chat/completions/{completion_id}/messages/{message_id}/plot",
+    response_model=Optional[dict[str, Any]],
+    response_model_exclude_none=True,
 )
 async def retrieve_plot(completion_id: str, message_id: str, request: Request, username: str = Depends(auth_service.verify_credentials)):
     """
@@ -108,48 +98,5 @@ async def retrieve_plot(completion_id: str, message_id: str, request: Request, u
     """
     try:
         return await service.find_plot_by_message(completion_id, message_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-################
-# conversation api list
-################
-# GET https://chatgpt.com/backend-api/conversations
-# GET https://chatgpt.com/backend-api/conversations/{completion_id}
-
-
-# get all conversations
-@router.get("/conversations", response_model=ConversationResponse, response_model_exclude_none=True)
-async def list_conversations(
-    request: Request,
-    username: str = Depends(auth_service.verify_credentials),
-):
-    """
-    Get all conversations
-    """
-    logger.debug(f"Listing conversations for username: {username}")
-    try:
-        return await service.find_all_conversations(username)
-    except Exception as e:
-        logger.error(f"Error in list_conversations: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# get a conversation by id
-
-
-@router.get("/conversations/{completion_id}", response_model=ConversationItemResponse, response_model_exclude_none=True)
-async def retrieve_conversation(
-    completion_id: str,
-    request: Request,
-    username: str = Depends(auth_service.verify_credentials),
-):
-    """
-    Get a conversation by id
-    """
-    logger.debug(f"Retrieving conversation with completion_id: {completion_id}")
-    try:
-        return await service.find_conversation_by_id(completion_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import chat_api
+from app.api import chat_api, conversation_api, management_api
 from app.config.log import log_config
 from loguru import logger
 from environs import Env
@@ -116,6 +116,8 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/.well-known", StaticFiles(directory=".well-known"), name="well-known")
 app.include_router(chat_api.router)
+app.include_router(management_api.router)
+app.include_router(conversation_api.router)
 
 # Build and mount Gradio app
 demo = build_gradio_app()

@@ -8,7 +8,7 @@ from app.mapper.chat_mapper import ChatMapper
 from app.mapper.conversation_mapper import ConversationMapper
 import uuid
 from loguru import logger
-from app.schema.conversation_schema import ConversationResponse
+from app.schema.conversation_schema import ConversationItemResponse, ConversationResponse
 from app.service.chat_validation import ChatValidation
 from app.agent.chat_agent_client import ChatAgentClient
 
@@ -57,19 +57,18 @@ class ChatService:
         return ConversationResponse(items=result, total=len(result), limit=100, offset=0)
 
     # conversation service
-    async def find_conversation_by_id(self, completion_id: str) -> ConversationResponse | None:
+    async def find_conversation_by_id(self, completion_id: str) -> ConversationItemResponse | None:
         """Find a conversation by its completion ID."""
         logger.debug(f"BEGIN SERVICE: find_conversation_by_id for completion_id: {completion_id}")
         projection = {"messages": 0, "_id": 0}
         entity = await self.chat_repository.find_by_id(completion_id, projection=projection)
-        logger.debug(f"END SERVICE: find_conversation_by_id for completion_id: {completion_id}, entity: {entity}")
 
         if entity:
             conversation_item = self.conversation_mapper.to_schema(entity)
-            result = ConversationResponse(items=[conversation_item], total=1, limit=1, offset=0)
-            return result
-        else:
-            return None
+            logger.debug(f"END SERVICE: find_conversation_by_id for completion_id: {completion_id}, entity: {conversation_item}")
+            return conversation_item
+
+        return None
 
     async def find_plot_by_message(self, completion_id: str, message_id: str) -> dict[str, Any]:
         logger.debug(f"BEGIN SERVICE: find_plot_by_message for completion_id: {completion_id}, message_id: {message_id}")
