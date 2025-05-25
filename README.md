@@ -23,12 +23,20 @@ A FastAPI based OpenAI compatible Chatbot API with Visualization.
 
 ## 🚀 Features
 
-- OpenAI compatible API /v1/chat/completions
+- OpenAI compatible API 
+     - /v1/chat/completions
+     - /v1/chat/completions/{completion_id}
+     - /v1/chat/completions/{completion_id}/messages
+     - /v1/chat/completions/{completion_id}/messages/{message_id}/plots
+     - /v1/conversation
+     - /v1/conversation/{completion_id}
+
 - Complete mock implementation with USE_MOCK_API environment variable
 - Secure API key generation with HMAC signatures and API key authentication
 - In-memory storage for chat history and plots for mock implementation
 - MongoDB storage for chat history and plots for production
 - Support for all major OpenAI API endpoints
+- Gradio UI for testing the chatbot : [http://127.0.0.1:7860/ui](http://127.0.0.1:7860/ui)
 
 
 ## 📋 Endpoints
@@ -48,17 +56,23 @@ A FastAPI based OpenAI compatible Chatbot API with Visualization.
 git clone https://github.com/lokumai/openai-openapi-template.git
 ```
 
-2. Install dependencies:
+2. Create a .env file in the root directory and add the following variables:
+```bash
+cp .env.example .env
+```
+* Set your own values for the variables in the .env file.
+
+3. Install dependencies:
 ```bash
 uv sync
 ```
 
-3. Start MongoDB:
+4. Start MongoDB:
 ```bash
 docker compose -f docker/mongodb-docker-compose.yaml up -d
 ```
 
-4. Run on your local machine:
+5. Run API and Gradio UI on your local machine:
 ```bash
 
 ./run.sh
@@ -73,10 +87,11 @@ uv run uvicorn main:app --host 0.0.0.0 --port 7860 --reload
 ### 🔑 API Key Generation
 
 ```bash
-./scripts/api_key_generator.sh <username> <secret_key>
+./scripts/generate_api_key.sh <username> <secret_key>
 ```
 
-```text
+* This will generate a API_KEY and save it to the api_key.txt file.
+```plaintext
 API Key generated:
 Username: template
 API Key: sk-template-token
@@ -84,16 +99,24 @@ API Key: sk-template-token
 API Key saved to api_key.txt
 ```
 
+## 🔒 Security Configuration
+There are various security configurations that can be set in the .env file for development and production environments.
+
+- `SECURITY_ENABLED=True` or `False`, If security is enabled, the API will require an API_KEY to be provided in the request header.
+- `SECURITY_DEFAULT_USERNAME=admin`, If security is disabled, the API will not require an API_KEY to be provided in the request header and will use this for current user.
+- `SECURITY_SECRET_KEY=your-secret-key-here`, This is the secret key for the API_KEY generation. It is used to generate and verify the API_KEY for the user.
+- `API_KEY`, If you want to use the Gradio UI, you can set the API_KEY in the .env file. GradioUI will use the API_KEY to make requests to the API. Especially `POST/chat/completions` endpoint.
+
 ### 🔑 API Key Authentication
 
 ```bash
-curl -X POST "http://localhost:8000/v1/chat/completions" \
+curl -X POST "http://localhost:7860/v1/chat/completions" \
      -H "Authorization: Bearer sk-template-token" \
      -H "Content-Type: application/json" \
      -d '{"model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": "Hello!"}]}'
 ```
 
-## Embedded MongoDB for local machine development
+## 💾 Embedded MongoDB for local machine development
 
 * `database_type` environment variable is set to `embedded`, the API will use embedded MongoDB for local machine development. Default is `mongodb`.
 * `mongodb_host` environment variable is set to `localhost`, the API will use localhost for MongoDB. Default is `localhost`.
@@ -101,7 +124,7 @@ curl -X POST "http://localhost:8000/v1/chat/completions" \
 * `mongodb_database` environment variable is set to `openai_openapi_template`, the API will use openai_openapi_template for MongoDB. Default is `openai_openapi_template`.
 
 
-## Contributing
+## 🤝 Contributing  Attention Please!!!
 When you make changes to the code, please run the following commands to ensure the code is running on your local machine and formatted and linted correctly.
 
 * Fork the repository
@@ -141,7 +164,6 @@ git fetch origin main
 git merge origin/main
 ```
 
-
 * Validate the code is running on your local machine
 ```bash
 uv run uvicorn app:app --reload
@@ -165,16 +187,6 @@ git push origin feature/new-feature
 ```bash
 gh pr create --base main --head feature/new-feature --title "Add new feature" --body "This PR adds a new feature to the project"
 ```
-
-
-
-
-
-
-
-
-
-
 
  ## Open Issue
  Mock Implementation:
