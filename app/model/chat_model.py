@@ -51,6 +51,8 @@ from typing import List, Optional, Dict, Any
 #   "stream": false
 # }
 
+ 
+
 
 class ChatMessage(BaseModel):
     """
@@ -60,7 +62,7 @@ class ChatMessage(BaseModel):
     message_id: str = Field(..., description="The unique identifier for the message")
     role: Optional[str] = Field(None, description="The role of the message sender", examples=["user", "assistant", "system"])
     content: str = Field(..., description="The content of the message")
-    figure: Optional[Dict[str, Any]] = Field(None, description="The figure data for visualization")
+    figure: Optional[dict[str, Any]] = Field(None, description="The figure data for visualization")
     created_date: datetime = Field(default_factory=datetime.now, description="The timestamp of the message")
 
     def __str__(self):
@@ -69,7 +71,7 @@ class ChatMessage(BaseModel):
             message_id={self.message_id},
             role={self.role},
             content={self.content},
-            figure={json.dumps(self.figure, indent=4) if self.figure else None},
+            figure={self.figure},
             created_date={self.created_date})
             """
 

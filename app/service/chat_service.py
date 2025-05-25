@@ -1,7 +1,7 @@
 import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 from app.repository.chat_repository import ChatRepository
-from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse, PlotResponse
+from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, MessageResponse
 from app.mapper.chat_mapper import ChatMapper
 from app.mapper.conversation_mapper import ConversationMapper
 import uuid
@@ -51,7 +51,7 @@ class ChatService:
         messages = await self.chat_repository.find_messages(completion_id)
         logger.debug(f"END SERVICE: find_messages for completion_id: {completion_id}, messages: {len(messages)}")
         messages_response = [
-            MessageResponse(message_id=message.message_id, role=message.role, content=message.content, created_date=message.created_date)
+            MessageResponse(message_id=message.message_id, role=message.role, content=message.content, created_date=message.created_date, figure=(message.figure))
             for message in messages
         ]
         return messages_response
@@ -80,12 +80,12 @@ class ChatService:
         else:
             return None
 
-    async def find_plot_by_message(self, completion_id: str, message_id: str) -> Optional[PlotResponse]:
+    async def find_plot_by_message(self, completion_id: str, message_id: str) -> Optional[dict[str, Any]]:
         logger.debug(f"BEGIN SERVICE: find_plot_by_message for completion_id: {completion_id}, message_id: {message_id}")
         figure = await self.chat_repository.find_plot_by_message(completion_id, message_id)
 
         if figure:
-            result = PlotResponse(plot_id=message_id, completion_id=completion_id, message_id=message_id, figure=figure)
+            result = (figure)
         else:
             result = None
             logger.warning(f"END SERVICE: no figure found for completion_id: {completion_id}, message_id: {message_id}")

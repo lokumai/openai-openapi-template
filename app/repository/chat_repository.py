@@ -1,5 +1,4 @@
-import datetime
-from typing import List
+from typing import Any, List, Optional
 from app.db.factory import db_client
 from app.model.chat_model import ChatMessage, ChatCompletion
 from loguru import logger
@@ -182,7 +181,14 @@ class ChatRepository:
         logger.trace(f"REPO find_messages. chat_doc: {chat_doc}")
         if chat_doc and "messages" in chat_doc and chat_doc["messages"]:
             try:
-                messages_list = [ChatMessage(**item) for item in chat_doc["messages"]]
+                
+                messages_list = [ChatMessage(
+                    message_id=item["message_id"],
+                    role=item["role"],
+                    content=item["content"],
+                    figure=item["figure"] if item["figure"] else None,
+                    created_date=item["created_date"]
+                ) for item in chat_doc["messages"]]
                 logger.debug(f"END REPO: find_messages. Found {len(messages_list)} messages.")
                 return messages_list
             except Exception as e:
@@ -192,27 +198,45 @@ class ChatRepository:
         logger.info(f"No messages found for completion_id {completion_id} or messages field is empty/missing.")
         return []
     
-    async def find_plot_by_message(self, completion_id: str, message_id: str) -> dict:
+    async def find_plot_by_message(self, completion_id: str, message_id: str) -> Optional[dict[str, Any]]:
         """
         Find a plot by a given message id.
         Example : completion_id = "123", message_id = "123"
         """
         logger.debug(f"BEGIN REPO: find plot by message id. input parameters: completion_id: {completion_id}, message_id: {message_id}")
-        query = {"completion_id": completion_id, "messages": {"$elemMatch": {"message_id": message_id}}}
-        projection = { "_id": 0}
+        
+        query = {"completion_id": completion_id}
+        projection = {"messages": 1, "_id": 0}
         try:
-            logger.debug(f"REPO find_plot_by_message. query: {query}, projection: {projection}")
             entity_doc = await self.db.chat_completion.find_one(query, projection)
-            logger.debug("REPO find_plot_by_message. entity_doc")
+            logger.debug(f"REPO   entity_doc: {entity_doc}")
         except Exception as e:
             logger.error(f"Error finding plot by message id: {e}")
             return None
         
-        # if messages is not empty and messages is not None, convert to ChatMessage
-        if entity_doc and entity_doc["messages"]:
-            entity = ChatMessage(**entity_doc["messages"][0])
-        logger.debug(f"REPO find_plot_by_message. entity: {entity}")
-        if entity.figure:
-            return entity.figure
+        # Mesajları Python tarafında filtreleyelim
+        if entity_doc and "messages" in entity_doc and entity_doc["messages"]:
+            try:
+                # İstenen message_id'ye sahip mesajı bul
+                # for message in entity_doc["messages"]:
+                #     if message["message_id"] == message_id:
+                #         figure = message.get("figure")
+                #         logger.debug(f"REPO find figure: {figure}")
+                #         return figure
+                
+                match = next((message for message in entity_doc["messages"] if message["message_id"] == message_id), None)
+                if match:
+                    figure = match.get("figure")
+                    logger.debug(f"REPO find figure: {figure}")
+                    return figure
+                else:
+                    logger.warning(f"Message with ID {message_id} not found")
+                
+                logger.warning(f"Message with ID {message_id} not found")
+                return None
+            except Exception as e:
+                logger.error(f"Error finding plot by message id: {e}")
+                return None
         else:
+            logger.warning(f"REPO find_plot_by_message. entity_doc: {entity_doc}")
             return None
