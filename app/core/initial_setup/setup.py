@@ -37,7 +37,7 @@ class InitialSetup:
             if db_config.DATABASE_TYPE != "embedded":
                 logger.info("Skipping initial setup as database type is not embedded")
                 return
-            
+
             # if MONGO_URI is not set, it means we are using embedded database
             # last check is for the case of using mongomock-motor for database_type=embedded
             # so last exit before the bridge :) turkish joke
@@ -46,24 +46,24 @@ class InitialSetup:
                 logger.warning("Deleting all chat completions in the embedded database")
                 await self.chat_repository.db.chat_completion.delete_many({})
                 logger.warning("Deleting all chat completions in the embedded database done")
-            
+
             chat_completions = self._load_initial_data()
             logger.info(f"Loaded {len(chat_completions)} initial chat completions")
-            
+
             for completion in chat_completions:
                 try:
                     found_id = await self.chat_repository.find_by_id(completion.completion_id)
                     if found_id:
                         logger.debug(f"Chat completion already exists: {found_id}")
                         continue
-                        
+
                     saved = await self.chat_repository.save(completion)
                     logger.info(f"Successfully saved chat completion: {saved.completion_id}")
-                    
+
                 except Exception as e:
                     logger.error(f"Error saving chat completion {completion.completion_id}: {e}")
                     raise
-                
+
         except Exception as e:
             logger.error(f"Setup failed: {e}")
             raise

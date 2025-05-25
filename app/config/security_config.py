@@ -16,6 +16,7 @@ class SecurityConfig(BaseSettings):
     ENABLED: bool = True
     DEFAULT_USERNAME: str = "admin"
 
+
 @lru_cache()
 def get_security_config() -> SecurityConfig:
-    return SecurityConfig() 
+    return SecurityConfig()

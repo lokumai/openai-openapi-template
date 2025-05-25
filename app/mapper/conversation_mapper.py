@@ -10,9 +10,6 @@ class ConversationMapper(BaseMapper[ChatCompletion, ConversationItemResponse]):
 
     def to_schema(self, model: ChatCompletion) -> ConversationItemResponse:
         """Convert ChatCompletion model to ConversationItem schema."""
-        # Convert datetime to Unix timestamp
-        created_timestamp = int(model.created_date.timestamp()) if model.created_date else None
-        last_updated_timestamp = int(model.last_updated_date.timestamp()) if model.last_updated_date else None
 
         # Get the first message content as title if title is not set
         title = model.title
@@ -23,8 +20,8 @@ class ConversationMapper(BaseMapper[ChatCompletion, ConversationItemResponse]):
         return ConversationItemResponse(
             completion_id=model.completion_id,
             title=title,
-            create_time=created_timestamp,
-            update_time=last_updated_timestamp,
+            create_time=model.created_date,
+            update_time=model.last_updated_date,
             is_archived=model.is_archived,
             is_starred=model.is_starred,
         )

@@ -1,13 +1,8 @@
 import datetime
 from typing import List
 from app.repository.chat_repository import ChatRepository
-from app.schema.chat_schema import (
-    ChatCompletionRequest,
-    ChatCompletionResponse,
-    ChoiceResponse,
-    MessageResponse,
-)
-from app.model.chat_model import ChatCompletion, ChatMessage
+from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse
+from app.model.chat_model import ChatMessage
 from app.mapper.chat_mapper import ChatMapper
 from app.mapper.conversation_mapper import ConversationMapper
 import uuid
@@ -28,7 +23,7 @@ class ChatService:
 
         # Convert request to model
         entity = self.chat_mapper.to_model(request)
-        
+
         if entity.completion_id:
             entity.completion_id = str(uuid.uuid4())
             entity.created_by = username
@@ -65,10 +60,16 @@ class ChatService:
         result = self.conversation_mapper.to_schema_list(entities)
         return ConversationResponse(items=result, total=len(result), limit=100, offset=0)
 
-
-
     async def find_conversation_by_id(self, completion_id: str) -> ConversationResponse:
         """Find a conversation by its completion ID."""
-        entity = await self.chat_repository.find_by_id(completion_id)
-        result = self.conversation_mapper.to_schema(entity) if entity else None
-        return ConversationResponse(items=[result], total=1, limit=1, offset=0)
+        logger.debug(f"BEGIN SERVICE: find_conversation_by_id for completion_id: {completion_id}")
+        projection = {"messages": 0, "_id": 0}
+        entity = await self.chat_repository.find_by_id(completion_id, projection=projection)
+        logger.debug(f"END SERVICE: find_conversation_by_id for completion_id: {completion_id}, entity: {entity}")
+
+        if entity:
+            # Tekil kayıt için doğrudan dönüşüm yapıyoruz
+            result = self.conversation_mapper.to_schema(entity)
+            return result
+        else:
+            return None

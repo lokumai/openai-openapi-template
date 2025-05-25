@@ -145,7 +145,7 @@ async def retrieve_plot(
 
 
 # get all conversations
-@router.get("/conversations", response_model=ConversationResponse, response_model_exclude_none=True) 
+@router.get("/conversations", response_model=ConversationResponse, response_model_exclude_none=True)
 async def list_conversations(
     request: Request,
     username: str = Depends(auth_service.verify_credentials),
@@ -155,7 +155,7 @@ async def list_conversations(
     """
     logger.debug(f"Listing conversations for username: {username}")
     try:
-        return await service.find_all_conversations(username) 
+        return await service.find_all_conversations(username)
     except Exception as e:
         logger.error(f"Error in list_conversations: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

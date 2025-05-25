@@ -9,9 +9,12 @@ import pymongo
 
 class DocumentNotFoundError(Exception):
     """Raised when a document is not found in the database."""
+
     pass
 
+
 # TODO: llm_model, llm_provider will come from .env file
+
 
 class ChatRepository:
     def __init__(self):
@@ -33,13 +36,13 @@ class ChatRepository:
             Exception: If the chat completion is not created
         """
         logger.info(f"Creating new chat completion for user: {entity.created_by}")
-        
+
         entity.completion_id = str(uuid.uuid4()) if entity.completion_id is None else entity.completion_id
-        entity_dict = entity.model_dump(by_alias=True) 
+        entity_dict = entity.model_dump(by_alias=True)
 
         # MongoDB'ye kaydet
         insert_result = await self.db.chat_completion.insert_one(entity_dict)
-        
+
         if not insert_result.inserted_id:
             logger.error(f"Failed to create new chat completion with ID: {entity.completion_id}")
             raise Exception(f"Failed to create chat completion with ID: {entity.completion_id}")
@@ -50,13 +53,13 @@ class ChatRepository:
     async def _update(self, entity: ChatCompletion) -> ChatCompletion:
         """
         Update an existing chat completion in the database.
-        
+
         Args:
             entity (ChatCompletion): The chat completion entity to update
-            
+
         Returns:
             ChatCompletion: The updated chat completion
-            
+
         Raises:
             ValueError: If completion_id is not provided
             DocumentNotFoundError: If the document to update is not found
@@ -65,37 +68,34 @@ class ChatRepository:
             raise ValueError("Cannot update chat completion without completion_id")
 
         logger.info(f"Updating chat completion with ID: {entity.completion_id}")
-        
+
         # these fields are not updatable
         non_updatable_fields = {"created_date", "created_by", "completion_id"}
-        
+
         # get the model data and remove the non-updatable fields
-        update_payload = {
-            k: v for k, v in entity.model_dump(by_alias=True).items() 
-            if k not in non_updatable_fields
-        }
-        
+        update_payload = {k: v for k, v in entity.model_dump(by_alias=True).items() if k not in non_updatable_fields}
+
         if not update_payload:
             logger.warning(f"No updatable fields found for chat completion ID: {entity.completion_id}")
             return await self.find_by_id(entity.completion_id)
-        
+
         query = {"completion_id": entity.completion_id}
         update = {"$set": update_payload}
-        
+
         try:
             result = await self.db.chat_completion.update_one(query, update)
-            
+
             if result.matched_count == 0:
                 logger.error(f"Chat completion with ID {entity.completion_id} not found for update")
                 raise DocumentNotFoundError(f"Chat completion with ID {entity.completion_id} not found")
-                
+
             if result.modified_count == 0:
                 logger.info(f"Chat completion with ID {entity.completion_id} matched but not modified")
             else:
                 logger.info(f"Successfully updated chat completion with ID: {entity.completion_id}")
-                
+
             return await self.find_by_id(entity.completion_id)
-            
+
         except Exception as e:
             logger.error(f"Error updating chat completion with ID {entity.completion_id}: {str(e)}")
             raise
@@ -106,9 +106,8 @@ class ChatRepository:
         it will be updated. Otherwise, a new chat completion will be created.
         """
         logger.debug(f"BEGIN REPO: save chat completion. username: {entity.created_by}, completion_id: {entity.completion_id}")
-        
-        try:
 
+        try:
             result = await self.find_by_id(entity.completion_id)
             if result:
                 return await self._update(entity)
@@ -156,8 +155,8 @@ class ChatRepository:
         Example : completion_id = "123"
         """
         logger.debug(f"BEGIN REPO: find chat completion by id. input parameters: completion_id: {completion_id}, projection: {projection}")
-
-        entity_doc = await self.db.chat_completion.find_one({"completion_id": completion_id}, projection)
+        query = {"completion_id": completion_id}
+        entity_doc = await self.db.chat_completion.find_one(query, projection)
 
         if entity_doc:
             logger.trace(f"REPO find_by_id. Found entity_doc: {entity_doc}")

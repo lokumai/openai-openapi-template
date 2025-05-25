@@ -12,12 +12,12 @@ api_key_header = APIKeyHeader(
     name="Authorization",
     scheme_name="ApiKeyAuth",
     description="API key in the format: sk-{username}-{base64_encoded_data}",
-    auto_error=False  # API key olmadığında otomatik hata vermesini engelle
+    auto_error=False,  # API key olmadığında otomatik hata vermesini engelle
 )
 
 
 class AuthService:
-    def __init__(self): 
+    def __init__(self):
         self.api_key_header = api_key_header
         self.security_config = get_security_config()
 
@@ -87,20 +87,20 @@ class AuthService:
                 detail=f"Invalid API key: {str(e)}",
             )
 
-    async def verify_credentials(self, api_key: str =  Security(api_key_header)) -> str:
+    async def verify_credentials(self, api_key: str = Security(api_key_header)) -> str:
         """Verify API key and extract username."""
         logger.trace(f"BEGIN: api_key: {api_key}")
-        
+
         if not self.security_config.ENABLED:
             logger.info("Security is disabled, using default username: " + self.security_config.DEFAULT_USERNAME)
             return self.security_config.DEFAULT_USERNAME
-        
+
         if not api_key:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="API key is required when security is enabled",
             )
-            
+
         username = self.decode_api_key(api_key)
         result = username
         logger.trace(f"END: result: {result}")
