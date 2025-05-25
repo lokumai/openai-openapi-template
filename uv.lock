@@ -123,6 +123,47 @@ wheels = [
 ]
 
 [[package]]
+name = "chatbot-api"
+version = "0.0.13"
+source = { virtual = "." }
+dependencies = [
+    { name = "environs" },
+    { name = "fastapi" },
+    { name = "gradio" },
+    { name = "httpx" },
+    { name = "loguru" },
+    { name = "mongita" },
+    { name = "mongomock-motor" },
+    { name = "motor" },
+    { name = "plotly" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "pymongo" },
+    { name = "requests" },
+    { name = "toml" },
+    { name = "uvicorn" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "environs", specifier = ">=14.1.1" },
+    { name = "fastapi", specifier = ">=0.115.12" },
+    { name = "gradio", specifier = ">=5.30.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "mongita", specifier = ">=1.2.0" },
+    { name = "mongomock-motor", specifier = ">=0.0.36" },
+    { name = "motor", specifier = ">=3.7.1" },
+    { name = "plotly", specifier = ">=6.1.1" },
+    { name = "pydantic", specifier = ">=2.11.4" },
+    { name = "pydantic-settings", specifier = ">=2.9.1" },
+    { name = "pymongo", specifier = ">=4.13.0" },
+    { name = "requests", specifier = ">=2.32.3" },
+    { name = "toml", specifier = ">=0.10.2" },
+    { name = "uvicorn", specifier = ">=0.34.2" },
+]
+
+[[package]]
 name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
@@ -523,45 +564,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/76/95/bef5b37f29fc5e739947e9ce5179ad402875633308504a52d188302319c8/numpy-2.2.6-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:8e9ace4a37db23421249ed236fdcdd457d671e25146786dfc96835cd951aa7c1", size = 18385260 },
     { url = "https://files.pythonhosted.org/packages/09/04/f2f83279d287407cf36a7a8053a5abe7be3622a4363337338f2585e4afda/numpy-2.2.6-cp313-cp313t-win32.whl", hash = "sha256:038613e9fb8c72b0a41f025a7e4c3f0b7a1b5d768ece4796b674c8f3fe13efff", size = 6377225 },
     { url = "https://files.pythonhosted.org/packages/67/0e/35082d13c09c02c011cf21570543d202ad929d961c02a147493cb0c2bdf5/numpy-2.2.6-cp313-cp313t-win_amd64.whl", hash = "sha256:6031dd6dfecc0cf9f668681a37648373bddd6421fff6c66ec1624eed0180ee06", size = 12771374 },
-]
-
-[[package]]
-name = "openai-api-clone"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "environs" },
-    { name = "fastapi" },
-    { name = "gradio" },
-    { name = "httpx" },
-    { name = "loguru" },
-    { name = "mongita" },
-    { name = "mongomock-motor" },
-    { name = "motor" },
-    { name = "plotly" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "pymongo" },
-    { name = "requests" },
-    { name = "uvicorn" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "environs", specifier = ">=14.1.1" },
-    { name = "fastapi", specifier = ">=0.115.12" },
-    { name = "gradio", specifier = ">=5.30.0" },
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "loguru", specifier = ">=0.7.3" },
-    { name = "mongita", specifier = ">=1.2.0" },
-    { name = "mongomock-motor", specifier = ">=0.0.36" },
-    { name = "motor", specifier = ">=3.7.1" },
-    { name = "plotly", specifier = ">=6.1.1" },
-    { name = "pydantic", specifier = ">=2.11.4" },
-    { name = "pydantic-settings", specifier = ">=2.9.1" },
-    { name = "pymongo", specifier = ">=4.13.0" },
-    { name = "requests", specifier = ">=2.32.3" },
-    { name = "uvicorn", specifier = ">=0.34.2" },
 ]
 
 [[package]]
@@ -1017,6 +1019,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ce/20/08dfcd9c983f6a6f4a1000d934b9e6d626cff8d2eeb77a89a68eef20a2b7/starlette-0.46.2.tar.gz", hash = "sha256:7f7361f34eed179294600af672f565727419830b54b7b084efe44bb82d2fccd5", size = 2580846 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/8b/0c/9d30a4ebeb6db2b25a841afbb80f6ef9a854fc3b41be131d249a977b4959/starlette-0.46.2-py3-none-any.whl", hash = "sha256:595633ce89f8ffa71a015caed34a5b2dc1c0cdb3f0f1fbd1e69339cf2abeec35", size = 72037 },
+]
+
+[[package]]
+name = "toml"
+version = "0.10.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/be/ba/1f744cdc819428fc6b5084ec34d9b30660f6f9daaf70eead706e3203ec3c/toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f", size = 22253 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/44/6f/7120676b6d73228c96e17f1f794d8ab046fc910d781c8d151120c3f1569e/toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b", size = 16588 },
 ]
 
 [[package]]
