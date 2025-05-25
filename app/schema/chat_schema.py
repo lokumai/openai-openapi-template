@@ -23,7 +23,7 @@ class ChatCompletionRequest(BaseModel):
     )
     model: Optional[str] = Field(None, description="The model to use for the chat completion")
     messages: Optional[List[ChatMessageRequest]] = Field(None, description="The messages to use for the chat completion")
-    stream: Optional[bool] = Field(None, description="Whether to stream the chat completion")
+    stream: bool = Field(False, description="Whether to stream the chat completion")
 
 
 class ChatMessageResponse(BaseModel):

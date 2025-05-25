@@ -2,7 +2,6 @@ import datetime
 from typing import Any, List
 
 from app.agent.chat_agent_scheme import UserChatAgentRequest
-from app.model.chat_model import ChatMessageModel
 from app.repository.chat_repository import ChatRepository
 from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse, ChatMessageResponse, ChatMessageRequest
 from app.mapper.chat_mapper import ChatMapper
@@ -85,47 +84,55 @@ class ChatService:
         logger.debug(f"END SERVICE: find_plot_by_message for completion_id: {completion_id}, message_id: {message_id} with figure")
         return result
 
-    async def _save_chat_completion(self, request: ChatCompletionRequest, username: str) -> ChatCompletionResponse:
+    async def _save_chat_completion(self, chat_schema: ChatCompletionRequest, username: str) -> ChatCompletionResponse:
         """
         Save a chat completion to the database.
         """
-        logger.debug(f"BEGIN SERVICE: for request: {request}, username: {username}")
+        logger.debug("BEGIN SERVICE: Saving Chat Completion")
         try:
             # Convert request to model
-            entity = self.chat_mapper.to_model(request)
+            chat_model = self.chat_mapper.to_model(chat_schema)
 
-            entity.last_updated_by = username
-            entity.last_updated_date = datetime.datetime.now()
-            if entity.completion_id:
-                # generate a new chat completion
-                entity.completion_id = str(uuid.uuid4())
-            last_user_request_message = request.messages[-1]
-            current_entity = await self.chat_repository.find_by_id(entity.completion_id)
-            if not current_entity:
-                # create new chat completion with new user request message
-                entity.created_by = username
-                entity.created_date = datetime.datetime.now()
-                entity.last_updated_by = username
-                entity.last_updated_date = datetime.datetime.now()
+            chat_model.last_updated_by = username
+            chat_model.last_updated_date = datetime.datetime.now()
+            if not chat_model.completion_id:
+                # generate a new chat completion_id this is a new chat starting
+                logger.info("Generating new chat completion_id for new chat starting")
+                chat_model.completion_id = str(uuid.uuid4())
+
+            # generate message_id and created_date for latest user message
+            last_user_message_model = chat_model.messages[-1]
+            last_user_message_model.message_id = str(uuid.uuid4())
+            last_user_message_model.created_date = datetime.datetime.now()
+            logger.debug(f"last_user_message_model: {last_user_message_model}")
+
+            logger.debug(f"finding by id. entity: {chat_model.completion_id}")
+            current_db_entity = await self.chat_repository.find_by_id(chat_model.completion_id)
+            logger.debug(f"found by id. Current entity: {current_db_entity.completion_id if current_db_entity else 'None'}")
+
+            # if chat completion is not found, create a new one
+            if not current_db_entity:
+                logger.info("Create new chat completion with new user request message")
+                chat_model.created_by = username
+                chat_model.created_date = datetime.datetime.now()
+                chat_model.last_updated_by = username
+                chat_model.last_updated_date = datetime.datetime.now()
                 # title can generate with LLM from user request message.content
-                entity.title = last_user_request_message.content[:20]
-                final_entity = await self.chat_repository.create(entity)
-            else:
-                # update existing chat completion with new user request message
+                chat_model.title = last_user_message_model.content[:20]
 
-                message_model = ChatMessageModel(
-                    message_id=str(uuid.uuid4()),
-                    role=last_user_request_message.role,
-                    content=last_user_request_message.content,
-                    figure=None,
-                    created_date=datetime.datetime.now(),
-                )
-                current_entity.messages.append(message_model)
-                current_entity.last_updated_date = datetime.datetime.now()
-                final_entity = await self.chat_repository.update(current_entity)
+                final_entity = await self.chat_repository.create(chat_model)
+            else:
+                logger.info("Update existing chat completion with new user request message")
+
+                logger.debug(f"before update. current db entity messsage count: {len(current_db_entity.messages)}")
+                current_db_entity.messages.append(last_user_message_model)
+                logger.debug(f"after update. current db entity messsage count: {len(current_db_entity.messages)}")
+                current_db_entity.last_updated_date = datetime.datetime.now()
+                final_entity = await self.chat_repository.update(current_db_entity)
+                logger.debug(f"after update. final entity messsage count: {len(final_entity.messages)}")
 
             # Convert model to response
-            result = self.chat_mapper.to_schema(final_entity)
+            result = self.chat_mapper.to_schema(final_entity, convert_last_message=True)
             logger.debug("END SERVICE")
             return result
         except Exception as e:

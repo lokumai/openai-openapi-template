@@ -60,7 +60,7 @@ class ChatMessageModel(BaseModel):
     role: str = Field(..., description="The role of the message sender", examples=["user", "assistant", "system"])
     content: str = Field(..., description="The content of the message")
     figure: Optional[dict[str, Any]] = Field(None, description="The figure data for visualization")
-    created_date: datetime = Field(default_factory=datetime.now, description="The timestamp of the message")
+    created_date: Optional[datetime] = Field(None, description="The timestamp of the message")
 
     def __str__(self):
         return f"""
@@ -110,16 +110,10 @@ class ChatCompletion(BaseModel):
     is_starred: bool = Field(False, description="Whether the chat completion is starred")
 
     # audit fields
-    created_by: str = Field(..., description="The user who created the chat completion")
-    created_date: datetime = Field(
-        default_factory=datetime.now,
-        description="The date and time the chat completion was created",
-    )
-    last_updated_by: str = Field(..., description="The user who last updated the chat completion")
-    last_updated_date: datetime = Field(
-        default_factory=datetime.now,
-        description="The date and time the chat completion was last updated",
-    )
+    created_by: Optional[str] = Field(None, description="The user who created the chat completion")
+    created_date: Optional[datetime] = Field(None, description="The date and time the chat completion was created")
+    last_updated_by: Optional[str] = Field(None, description="The user who last updated the chat completion")
+    last_updated_date: Optional[datetime] = Field(None, description="The date and time the chat completion was last updated")
 
     class Config:
         populate_by_name = True

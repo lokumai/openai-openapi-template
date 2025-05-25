@@ -7,7 +7,6 @@ from app.schema.chat_schema import ChatCompletionRequest, ChatCompletionResponse
 from app.schema.conversation_schema import ConversationResponse, ConversationItemResponse
 from app.service.chat_service import ChatService
 from app.security.auth_service import AuthService
-from app.core.api_response import api_response
 from loguru import logger
 
 router = APIRouter(prefix="/v1", tags=["chat"])
@@ -30,7 +29,6 @@ async def get_version():
 ################
 # create a chat completion
 @router.post("/chat/completions", response_model=ChatCompletionResponse)
-@api_response()
 async def create_chat_completion(
     chat_completion: ChatCompletionRequest, request: Request, username: str = Depends(auth_service.verify_credentials)
 ):
@@ -40,9 +38,13 @@ async def create_chat_completion(
     If completion_id is provided, the model will continue the conversation from the last message.
     Summary: question -> Send button from chat interface(UI)
     """
+    logger.debug(f"BEGIN API: Create Chat Completion for username: {username}")
     try:
-        return await service.handle_chat_completion(chat_completion, username)
+        result = await service.handle_chat_completion(chat_completion, username)
+        logger.debug("END API: Create Chat Completion")
+        return result
     except Exception as e:
+        logger.error(f"Error in create_chat_completion: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

@@ -92,7 +92,7 @@ class AuthService:
         logger.trace(f"BEGIN: api_key: {api_key}")
 
         if not self.security_config.ENABLED:
-            logger.info("Security is disabled, using default username: " + self.security_config.DEFAULT_USERNAME)
+            logger.warning("Security is disabled, using default username: " + self.security_config.DEFAULT_USERNAME)
             return self.security_config.DEFAULT_USERNAME
 
         if not api_key:
