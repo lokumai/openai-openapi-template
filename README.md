@@ -183,8 +183,14 @@ gh pr create --base main --head feature/new-feature --title "Add new feature" --
 
  Production Implementation:
  - [ ] POST chat/completions - create a new chat completion
- - [ ] GET  chat/completions - list stored chat completions
- - [ ] GET  chat/completions/{completion_id} - get a stored chat completion by id
- - [ ] GET  chat/completions/{completion_id}/messages - get the messages in a stored chat completion by id
- - [ ] GET  chat/completions/{completion_id}/messages/{message_id}/plots - get the plots/graph-data/figure-json in a stored chat completion by id and message id
+ - [X] GET  chat/completions - list stored chat completions
+ - [X] GET  chat/completions/{completion_id} - get a stored chat completion by id
+ - [X] GET  chat/completions/{completion_id}/messages - get the messages in a stored chat completion by id
+ - [X] GET  chat/completions/{completion_id}/messages/{message_id}/plots - get the plots/graph-data/figure-json in a stored chat completion by id and message id
+-  [X] GET  conversation - get all conversations
+-  [X] GET  conversation/{completion_id} - get a conversation by completion_id
+
+
+
+
 
