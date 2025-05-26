@@ -13,7 +13,7 @@ WORKDIR /app
 
 COPY --chown=chameleon pyproject.toml uv.lock ./
 
-RUN uv sync --locked --no-dev
+RUN uv sync --no-dev
 
 
 COPY --chown=chameleon . /app
