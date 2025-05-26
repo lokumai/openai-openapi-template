@@ -10,43 +10,39 @@ short_description: OpenAI compatible Chatbot API
 
 # OpenAI Compatible Chatbot API Template
 
-A FastAPI based OpenAI compatible Chatbot API with Visualization.
+## Overview
+A FastAPI based OpenAI compatible Secure and Scalable Chatbot API with Visualization.
+OpenAPI/Swagger Standard Compliant. Python best-practices. API, Service, Repository Pattern.
 
 
 ## 🔗 Links
-* [Github URL](https://github.com/lokumai/openai-openapi-template)
-* [HF SPACE URL](https://huggingface.co/spaces/lokumai/openai-openapi-template)
-* [SwaggerUI](https://lokumai-openai-openapi-template.hf.space/docs)
-* [Redoc](https://lokumai-openai-openapi-template.hf.space/redoc)
-* [OpenAPI](https://lokumai-openai-openapi-template.hf.space/openapi.json)
+* [Github URL - https://github.com/lokumai/openai-openapi-template](https://github.com/lokumai/openai-openapi-template)
+* [HF SPACE URL - https://huggingface.co/spaces/lokumai/openai-openapi-template](https://huggingface.co/spaces/lokumai/openai-openapi-template)
+* [SwaggerUI - http://127.0.0.1:7860/docs](http://127.0.0.1:7860/docs)
+* [Redoc - http://127.0.0.1:7860/docs](http://127.0.0.1:7860/redoc)
+* [OpenAPI - http://127.0.0.1:7860/docs](http://127.0.0.1:7860/openapi.json)
+* [Gradio UI - http://127.0.0.1:7860/ui](http://127.0.0.1:7860/ui)
 
 
 ## 🚀 Features
 
 - OpenAI compatible API 
      - /v1/chat/completions
-     - /v1/chat/completions/{completion_id}
-     - /v1/chat/completions/{completion_id}/messages
-     - /v1/chat/completions/{completion_id}/messages/{message_id}/plots
-     - /v1/conversation
-     - /v1/conversation/{completion_id}
 
-- Complete mock implementation with USE_MOCK_API environment variable
+- Complete mock implementation with DATABASE_TYPE environment variable
 - Secure API key generation with HMAC signatures and API key authentication
 - In-memory storage for chat history and plots for mock implementation
 - MongoDB storage for chat history and plots for production
 - Support for all major OpenAI API endpoints
-- Gradio UI for testing the chatbot : [http://127.0.0.1:7860/ui](http://127.0.0.1:7860/ui)
+- Gradio UI for testing the chatbot
 
 
 ## 📋 Endpoints
-- GET     - `/chat/completions` list stored chat completions - for first load the chatbot
 - POST    - `/chat/completions` create a new chat completion - when user starts a new chat
-- GET     - `/chat/completions/{completion_id}` get a stored chat completion by completion_id - when user clicks on a chat on the list
-- POST    - `/chat/completions/{completion_id}` modify a stored chat completion by completion_id - NOT IMPLEMENTED YET
-- DELETE  - `/chat/completions/{completion_id}` delete a stored chat completion by completion_id - NOT IMPLEMENTED YET
-- GET     - `/chat/completions/{completion_id}/messages` get the messages in a stored chat completion by completion_id - when user clicks on a chat on the list
+- GET     - `/chat/completions/{completion_id}` get a stored chat completion with all messages and plots by completion_id - when user clicks on a chat on the list
 - GET     - `/chat/completions/{completion_id}/messages/{message_id}/plots` get the plots/graph-data/figure-json in a stored chat completion by completion_id and message_id
+- GET     - `/conversation` get all conversations
+- GET     - `/conversation/{completion_id}` get a conversation by completion_id
 
 
 ## 🛠️ Installation
@@ -187,22 +183,3 @@ git push origin feature/new-feature
 ```bash
 gh pr create --base main --head feature/new-feature --title "Add new feature" --body "This PR adds a new feature to the project"
 ```
-
- ## Open Issue
- Mock Implementation:
- - [X] Implement Mock response for all endpoints
- - [X] Implement API-Key Authentication and validation in all endpoints
-
- Production Implementation:
- - [X] POST chat/completions - create a new chat completion
- - [X] GET  chat/completions - list stored chat completions
- - [X] GET  chat/completions/{completion_id} - get a stored chat completion by id
- - [X] GET  chat/completions/{completion_id}/messages - get the messages in a stored chat completion by id
- - [X] GET  chat/completions/{completion_id}/messages/{message_id}/plots - get the plots/graph-data/figure-json in a stored chat completion by id and message id
--  [X] GET  conversation - get all conversations
--  [X] GET  conversation/{completion_id} - get a conversation by completion_id
-
-
-
-
-
