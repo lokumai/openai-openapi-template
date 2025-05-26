@@ -4,7 +4,7 @@ name: Build dependencies
 
 on:
   push:
-    branches: [ build ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -26,5 +26,3 @@ jobs:
       
       - uses: astral-sh/ruff-action@v3
       - run: ruff check
-
-
