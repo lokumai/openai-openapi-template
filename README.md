@@ -50,6 +50,11 @@ OpenAPI/Swagger Standard Compliant. Python best-practices. API, Service, Reposit
 - GET     - `/conversation/{completion_id}` get a conversation by completion_id
 
 
+## Architecture
+![image](https://github.com/user-attachments/assets/08be5ce4-43d9-463f-90cc-c04360d4a72e)
+
+
+
 ## 🛠️ Installation
 
 1. Clone the repository:
