@@ -15,8 +15,6 @@ jobs:
     env:
       REGISTRY: ghcr.io
       REPOSITORY: lokumai/openai-openapi-template
-      UID: 1000
-      USER: chameleon
     steps:
       - name: Checkout
         uses: actions/checkout@v3
